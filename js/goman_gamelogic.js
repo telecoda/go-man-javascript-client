@@ -7,6 +7,7 @@ GoMan.GameLogic = function() {
 
 var gameBoard;
 var gameId;
+var stats = new Stats();
 var asciiBoard;
 var frameCounter=0;
 
@@ -37,11 +38,16 @@ var myOnKeyPress = function(event) {
 }
 
 
-
-
-
 GoMan.GameLogic.startNewGame = function() {
 	
+	stats.setMode(0); // 0: fps, 1: ms
+
+	// Align top-left
+	stats.domElement.style.position = 'absolute';
+	stats.domElement.style.left = '0px';
+	stats.domElement.style.top = '0px';
+
+	document.body.appendChild( stats.domElement );
 
 	// hide start button
 	$("#startButton").addClass("hide");
@@ -60,8 +66,12 @@ GoMan.GameLogic.startNewGame = function() {
 }
 
 renderGame = function() {
+	stats.begin();
+
 	// fetch gameState from server
 	GoMan.GameLogic.getGameById(gameId);
+
+    stats.end();
 
 	// start render loop
 	requestAnimationFrame(renderGame);
