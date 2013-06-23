@@ -1,0 +1,87 @@
+<html>
+	<head>
+		<title>go-man-client in javascript</title>
+		<!-- go-man-client game by Telecoda
+		     pacman clone in go-lang--> 
+
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+		<script src="vendor/jquery/jquery-1.8.2.js"></script>
+		<script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+		<!-- game specific scripts -->
+		<script type="text/javascript" src="js/goman_apiutils.js"></script>
+		<script type="text/javascript" src="js/goman_gamelogic.js"></script>
+		<link href="vendor/bootstrap/css/bootstrap.css" rel="stylesheet">
+		<link href="vendor/bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
+		<link href="css/main.css" rel="stylesheet">
+	</head>
+	<body>
+		<div class="container-narrow" id="game-page">
+
+			<div class="masthead">
+				<ul class="nav nav-pills pull-right">
+					<li class="active">
+						<a href="#">Home</a>
+					</li>
+					<li>
+						<a href="mailto:madeupemail@here.com">Contact</a>
+					</li>
+				</ul>
+				<h3 class="muted">go-man-client</h3>
+			</div>
+
+			<hr>
+
+			<div class="jumbotron">
+				<h1>go-man</h1>
+				<p class="lead">
+				<a id="startButton" class="btn btn-large btn-success" href="#">Start New Game</a>
+					<textarea id="gameboard" cols="28" rows="28" style="margin-left: 0px; margin-right: 0px; width: 400px; font-family: courier !important;"></textarea>
+				</p>
+				
+				
+			</div>
+
+			<hr>
+
+			<div class="row-fluid marketing">
+				<div class="span6">
+					<h4>Controls</h4>
+					<p>
+						Use cursor keys to move
+					</p>
+
+				</div>
+
+				<div class="span6">
+					<h4>How to play</h4>
+					<p>
+						Eat the dots
+						Avoid the ghosts
+					</p>
+				</div>
+			</div>
+
+			<hr>
+
+			<div class="footer">
+				<p>
+					&copy; Telecoda 2013
+				</p>
+			</div>
+
+		</div>
+		
+		<script type="text/javascript">
+			'use strict';
+			
+			$(document).ready(function() {
+			  $("#startButton").click(function() {
+					GoMan.GameLogic.startNewGame();
+				});
+			});
+		</script>
+	</body>
+
+</html>
