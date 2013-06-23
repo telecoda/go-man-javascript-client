@@ -51,7 +51,7 @@ GoMan.APIUtils.asyncPOST  = function ( url, body, onLoaded, onError ) {
 
 			} else {
 
-				var errorDesc = "GoMan.APIUtils.asyncGET: Error getting [" + url + "] [" + xhr.status + "]";
+				var errorDesc = "GoMan.APIUtils.asyncPOST: Error getting [" + url + "] [" + xhr.status + "]";
 				onError(errorDesc);
 
 			}
@@ -61,6 +61,36 @@ GoMan.APIUtils.asyncPOST  = function ( url, body, onLoaded, onError ) {
 	};
 	
 	xhr.open( "POST", url, true );
+	xhr.send( null );
+	
+};
+
+GoMan.APIUtils.asyncPUT  = function ( url, body, onLoaded, onError ) {
+
+	var xhr = new XMLHttpRequest();
+
+	xhr.onreadystatechange = function () {
+
+		if ( xhr.readyState === 4 ) {
+
+			if ( xhr.status === 200 || xhr.status === 0 ) {
+
+				var fileData = xhr.responseText;
+				
+				onLoaded(fileData);
+
+			} else {
+
+				var errorDesc = "GoMan.APIUtils.asyncPUT: Error getting [" + url + "] [" + xhr.status + "]";
+				onError(errorDesc);
+
+			}
+
+		}
+
+	};
+	
+	xhr.open( "PUT", url, true );
 	xhr.send( null );
 	
 };

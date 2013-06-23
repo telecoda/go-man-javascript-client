@@ -69,7 +69,7 @@ renderGame = function() {
 	stats.begin();
 
 	// fetch gameState from server
-	GoMan.GameLogic.getGameById(gameId);
+	//temp remove GoMan.GameLogic.getGameById(gameId);
 
     stats.end();
 
@@ -81,6 +81,13 @@ renderGame = function() {
 
 moveRight = function() {
 	console.log("move right");
+
+	url = 'http://localhost:8080/games/'+gameId+'/moveright';
+
+
+	GoMan.APIUtils.asyncPUT(url, null, GoMan.GameLogic.onGameUpdate
+		, GoMan.GameLogic.onError);
+
 }
 
 
@@ -142,6 +149,10 @@ GoMan.GameLogic.onError = function(error) {
 
 GoMan.GameLogic.convertBoardToASCII = function(gameBoard) {
 
+	// player location
+	var playerX = gameBoard.MainPlayer.Location.X;
+	var playerY = gameBoard.MainPlayer.Location.Y;
+
 	var asciiString ="";
 	asciiString = "GameId:" + gameId + "\n";
 	asciiString += "FrameCount:" + frameCounter + "\n";
@@ -151,7 +162,11 @@ GoMan.GameLogic.convertBoardToASCII = function(gameBoard) {
 		var row = gameBoard.BoardCells[r];
 		for (var c=0; c<row.length; c++) {
 			// process cells
-			asciiString+= String.fromCharCode(row[c]);
+			if(r==playerY && c==playerX) {
+				asciiString+= "G";
+			} else {
+				asciiString+= String.fromCharCode(row[c]);
+			}
 		}
 		// newline
 		asciiString+="\n";
