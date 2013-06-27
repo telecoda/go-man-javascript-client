@@ -69,6 +69,8 @@ GoMan.APIUtils.asyncPUT  = function ( url, body, onLoaded, onError ) {
 
 	var xhr = new XMLHttpRequest();
 
+	var jsonBody = JSON.stringify(body);
+
 	xhr.onreadystatechange = function () {
 
 		if ( xhr.readyState === 4 ) {
@@ -91,6 +93,7 @@ GoMan.APIUtils.asyncPUT  = function ( url, body, onLoaded, onError ) {
 	};
 	
 	xhr.open( "PUT", url, true );
-	xhr.send( null );
+	xhr.setRequestHeader('Content-Type', 'application/json');
+	xhr.send( jsonBody );
 	
 };

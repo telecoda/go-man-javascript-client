@@ -82,10 +82,11 @@ renderGame = function() {
 moveRight = function() {
 	console.log("move right");
 
-	url = 'http://localhost:8080/games/'+gameId+'/moveright';
+	gameBoard.MainPlayer.Location.X++;
 
+	url = 'http://localhost:8080/games/'+gameId;
 
-	GoMan.APIUtils.asyncPUT(url, null, GoMan.GameLogic.onGameUpdate
+	GoMan.APIUtils.asyncPUT(url, gameBoard.MainPlayer , GoMan.GameLogic.onGameUpdate
 		, GoMan.GameLogic.onError);
 
 }
@@ -93,16 +94,40 @@ moveRight = function() {
 
 moveLeft = function() {
 	console.log("move left");	
+
+	gameBoard.MainPlayer.Location.X--;
+
+	url = 'http://localhost:8080/games/'+gameId;
+
+	GoMan.APIUtils.asyncPUT(url, gameBoard.MainPlayer , GoMan.GameLogic.onGameUpdate
+		, GoMan.GameLogic.onError);
+
 }
 
 
 moveUp = function() {
 		console.log("move up");
+
+		gameBoard.MainPlayer.Location.Y--;
+
+		url = 'http://localhost:8080/games/'+gameId;
+
+		GoMan.APIUtils.asyncPUT(url, gameBoard.MainPlayer , GoMan.GameLogic.onGameUpdate
+			, GoMan.GameLogic.onError);
+
 }
 
 
 moveDown = function() {
 		console.log("move down");
+
+		gameBoard.MainPlayer.Location.Y++;
+
+		url = 'http://localhost:8080/games/'+gameId;
+
+		GoMan.APIUtils.asyncPUT(url, gameBoard.MainPlayer , GoMan.GameLogic.onGameUpdate
+			, GoMan.GameLogic.onError);
+
 }
 
 
@@ -130,7 +155,20 @@ GoMan.GameLogic.onGameStart = function(gameData) {
 
 }
 
-// called every updated
+// 
+GoMan.GameLogic.onPlayerUpdate = function(gameData) {
+		
+		// convert json to an object
+		gameBoard = JSON.parse(gameData);
+
+		frameCounter++;
+
+		asciiBoard = GoMan.GameLogic.convertBoardToASCII(gameBoard);
+
+		$("#gameboard").text(asciiBoard);
+}
+
+// called every update
 GoMan.GameLogic.onGameUpdate = function(gameData) {
 		
 		// convert json to an object
