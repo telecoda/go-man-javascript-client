@@ -16,7 +16,15 @@ var downKey = 's'.charCodeAt(0);
 var leftKey = 'a'.charCodeAt(0);
 var rightKey ='d'.charCodeAt(0);
 
+var keyAlreadyPressed = false;
+
 var myOnKeyPress = function(event) {
+
+		if(keyAlreadyPressed) {
+			return;
+		}
+
+		keyAlreadyPressed = true;
 
 		console.log("key pressed");
 		switch(event.which) {
@@ -69,7 +77,10 @@ renderGame = function() {
 	stats.begin();
 
 	// fetch gameState from server
-	//temp remove GoMan.GameLogic.getGameById(gameId);
+	GoMan.GameLogic.getGameById(gameId);
+
+	// allow another keypress now
+	keyAlreadyPressed = false;
 
     stats.end();
 
@@ -155,18 +166,6 @@ GoMan.GameLogic.onGameStart = function(gameData) {
 
 }
 
-// 
-GoMan.GameLogic.onPlayerUpdate = function(gameData) {
-		
-		// convert json to an object
-		gameBoard = JSON.parse(gameData);
-
-		frameCounter++;
-
-		asciiBoard = GoMan.GameLogic.convertBoardToASCII(gameBoard);
-
-		$("#gameboard").text(asciiBoard);
-}
 
 // called every update
 GoMan.GameLogic.onGameUpdate = function(gameData) {
