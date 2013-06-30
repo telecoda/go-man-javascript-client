@@ -193,6 +193,7 @@ GoMan.GameLogic.convertBoardToASCII = function(gameBoard) {
 	var asciiString ="";
 	asciiString = "GameId:" + gameId + "\n";
 	asciiString += "FrameCount:" + frameCounter + "\n";
+	asciiString += "Pills Remaining:" + gameBoard.PillsRemaining + "\n";
 
 	for (var r = 0;r<gameBoard.BoardCells.length; r++) {
 		// process row
