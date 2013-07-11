@@ -73,6 +73,20 @@ GoMan.GameLogic.startNewGame = function() {
 		
 }
 
+GoMan.GameLogic.fetchGameList = function() {
+	
+
+	
+
+	// get a list of games from the server
+	url = 'http://localhost:8080/games';
+
+	GoMan.APIUtils.asyncGET(url, GoMan.GameLogic.onGameListLoaded
+		, GoMan.GameLogic.onError);
+
+		
+}
+
 renderGame = function() {
 	stats.begin();
 
@@ -152,6 +166,37 @@ GoMan.GameLogic.getGameById = function(id) {
 		
 }
 
+// called when game loaded
+GoMan.GameLogic.onGameListLoaded = function(gameSummaryData) {
+
+	// convert json to an object
+	gameListSummary = JSON.parse(gameSummaryData);
+	
+	$("#gameListTable tbody").remove();
+	$("#gameListTable").append("<tbody></tbody>");
+
+	for(var i=0;i<gameListSummary.length;i++) {
+		var game = gameListSummary[i];
+		if(game.Players) {
+			totalPlayers = game.Players.length;
+		} else {
+			totalPlayers = 0;
+		}
+		gameHTML = "<tr>"
+			+ "<td>"+game.Id +"</td>"
+			+ "<td>"+game.State +"</td>"
+			+ "<td>"+game.CreatedTime +"</td>"
+			+ "<td>"+totalPlayers +"</td>"
+			+ "<td>"+game.GameStartTime +"</td>"
+			+ "</tr>";
+
+		$("#gameListTable tbody").append(gameHTML); 
+
+	}
+
+
+}
+
 // called at the beginning of the game
 GoMan.GameLogic.onGameStart = function(gameData) {
 		
@@ -181,7 +226,7 @@ GoMan.GameLogic.onGameUpdate = function(gameData) {
 }
 
 GoMan.GameLogic.onError = function(error) {
-
+	alert(error)
 }
 
 GoMan.GameLogic.convertBoardToASCII = function(gameBoard) {

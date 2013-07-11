@@ -5,7 +5,6 @@
 		     pacman clone in go-lang--> 
 
 		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
 		<script src="vendor/jquery/jquery-1.8.2.js"></script>
 		<script src="vendor/bootstrap/js/bootstrap.min.js"></script>
@@ -35,34 +34,30 @@
 			<hr>
 
 			<div class="jumbotron">
-				<h1>go-man</h1>
-				<p class="lead">
-				<a id="startButton" class="btn btn-large btn-success" href="#">Start New Game</a>
-					<textarea id="gameboard" cols="28" rows="28" style="margin-left: 0px; margin-right: 0px; width: 400px; font-family: courier !important;"></textarea>
-				</p>
-				
-				
+				<table class="table table-striped" id="gameListTable">
+		        <thead>
+		          <tr>
+		            <th>Game Id</th>
+		            <th>Game state</th>
+		            <th>Time Created</th>
+		            <th>Players</th>
+		            <th>Start Time</th>
+		          </tr>
+		        </thead>
+		        <tbody>
+		          <tr>
+		            <td>-</td>
+		            <td>-</td>
+		            <td>-</td>
+		            <td>-</td>		            		            <td>-</td>
+		          </tr>
+		        </tbody>
+		      </table>				
 			</div>
 
+			<div class="jumbotron">			<a id="refreshButton" class="btn btn-large btn-success" href="#">Refresh</a>
+			</div>
 			<hr>
-
-			<div class="row-fluid marketing">
-				<div class="span6">
-					<h4>Controls</h4>
-					<p>
-						Use cursor keys to move
-					</p>
-
-				</div>
-
-				<div class="span6">
-					<h4>How to play</h4>
-					<p>
-						Eat the dots
-						Avoid the ghosts
-					</p>
-				</div>
-			</div>
 
 			<hr>
 
@@ -79,8 +74,8 @@
 			
 			$(document).ready(function() {
 
-			  $("#startButton").click(function() {
-					GoMan.GameLogic.startNewGame();
+			  $("#refreshButton").click(function() {
+					GoMan.GameLogic.fetchGameList();
 				});
 			});
 		</script>

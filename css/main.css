@@ -1,5 +1,5 @@
 body {
-	overflow	: hidden;
+	overflow	: auto;
 	padding		: 0;
 	margin		: 0;
 
@@ -63,13 +63,6 @@ body {
 	padding		: 5px;
 }
 
-.gameButton {
-	display			: block;
-	vertical-align: center;
-	margin-left		: auto;
-	margin-right	: auto;  
-
-}
 
 .button {
    background-color: rgba(66,127,173,1);
@@ -105,23 +98,10 @@ body {
 .button:active {
 }
 
-.edit-item {
-	padding: 5px 5px;
-}
 
-.edit-item:hover {
-	background-color: #dddddd;
-}
-.edit-button {
-	padding: 0px 5px;
-}
 
 .no-pad {
 	padding: 0px 0px;
 }
 
-.preview-texture-image {
-	width: 300px;
-	height: 300px;
-	float: right;
-}
+
