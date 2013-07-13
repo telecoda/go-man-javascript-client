@@ -73,13 +73,17 @@ GoMan.GameLogic.startNewGame = function() {
 		
 }
 
-GoMan.GameLogic.fetchGameList = function() {
+GoMan.GameLogic.fetchGameList = function(filterByState) {
 	
 
 	
 
 	// get a list of games from the server
 	url = 'http://localhost:8080/games';
+
+	if(filterByState) {
+		url += "?state=" + filterByState;
+	}
 
 	GoMan.APIUtils.asyncGET(url, GoMan.GameLogic.onGameListLoaded
 		, GoMan.GameLogic.onError);
