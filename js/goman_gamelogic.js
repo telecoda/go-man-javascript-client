@@ -6,7 +6,9 @@ GoMan.GameLogic = function() {
 
 
 var gameBoard;
-var gameId;
+var boardCells;
+var gameId = localStorage.getItem('gameId');
+
 var stats = new Stats();
 var asciiBoard;
 var frameCounter=0;
@@ -14,6 +16,7 @@ var frameCounter=0;
 var gameName = "Dummy Game Name";
 var playerName = "Dummy Player Name";
 var playerType = "GoMan";
+var playerId = localStorage.getItem('playerId');
 
 var player;
 
@@ -94,8 +97,9 @@ GoMan.GameLogic.createNewGameClicked = function() {
 
 		
 }
-/*
-GoMan.GameLogic.startNewGame = function() {
+
+
+GoMan.GameLogic.startGame = function() {
 	
 	stats.setMode(0); // 0: fps, 1: ms
 
@@ -113,14 +117,13 @@ GoMan.GameLogic.startNewGame = function() {
 	document.removeEventListener('keypress', myOnKeyPress, false);
 	document.addEventListener('keypress', myOnKeyPress, false);
 
-	// request a new game from server
-	url = 'http://localhost:8080/games';
-
-	GoMan.APIUtils.asyncPOST(url, null, GoMan.GameLogic.onGameStart
+	url = 'http://localhost:8080/games/' + gameId;
+	// fetch game data for newly created game
+	GoMan.APIUtils.asyncGET(url, GoMan.GameLogic.onGameStart
 		, GoMan.GameLogic.onError);
 
 		
-} */
+} 
 
 GoMan.GameLogic.fetchGameList = function(filterByState) {
 	
@@ -257,6 +260,9 @@ GoMan.GameLogic.onGameCreated = function(gameData) {
 
 	gameId = gameBoard.Id;
 
+	// save gameId in local storage
+	localStorage.setItem('gameId',gameId);
+
 	GoMan.GameLogic.addPlayerToGame(gameId, gameName, playerName, playerType);
 
 }
@@ -264,12 +270,12 @@ GoMan.GameLogic.onGameCreated = function(gameData) {
 GoMan.GameLogic.addPlayerToGame = function(gameId, gameName, playerName, playerType) {
 
 	// now add first player to game
-	url = 'http://localhost:8080/games/'+gameId + "players";
+	url = 'http://localhost:8080/games/'+gameId + "/players";
 
 	var newPlayer = {};
 
-	newPlayer['playerName'] = playerName;
-	newPlayer['playerType'] = playerType;
+	newPlayer['Name'] = playerName;
+	newPlayer['Type'] = playerType;
 
 	GoMan.APIUtils.asyncPOST(url, newPlayer , GoMan.GameLogic.onPlayerAdded
 		, GoMan.GameLogic.onError);
@@ -281,11 +287,11 @@ GoMan.GameLogic.onPlayerAdded = function(playerAdded) {
 	// convert json to an object
 	player = JSON.parse(playerAdded);
 
-	// game has been created
-
+	// player has been added, save id
+	localStorage.setItem('playerId',player.Id);
 	// redirect to game board
 
-	redirect('game.html');
+	window.location.replace('game.html');
 
 	// now wait for remaining players
 
@@ -320,44 +326,72 @@ GoMan.GameLogic.onGameUpdate = function(gameData) {
 
 	frameCounter++;
 
-	asciiBoard = GoMan.GameLogic.convertBoardToASCII(gameBoard);
+	// convert game data to 2d array
+	boardCells = GoMan.GameLogic.convertBoardTo2DArray(gameBoard);
 
-	$("#gameboard").text(asciiBoard);
+	// overlay players positions on boardCells
+	boardCells = GoMan.GameLogic.addPlayersToBoardCells(gameBoard,boardCells);
+	
+	// create header details
+	var detailsString = GoMan.GameLogic.getGameDetailsString(gameBoard);
+	// merge player po
+	asciiBoard = GoMan.GameLogic.convertBoardCellsToASCII(boardCells);
+
+	$("#gameboard").text(detailsString + asciiBoard);
 }
 
 GoMan.GameLogic.onError = function(error) {
 	alert(error)
 }
 
-GoMan.GameLogic.convertBoardToASCII = function(gameBoard) {
+GoMan.GameLogic.convertBoardTo2DArray = function(gameBoard) {
 
-	// player location
-	var playerX = gameBoard.MainPlayer.Location.X;
-	var playerY = gameBoard.MainPlayer.Location.Y;
+	var boardCells = new Array(gameBoard.BoardCells.length);
+  	for (var r = 0; r < gameBoard.BoardCells.length; r++) {
+		var row = gameBoard.BoardCells[r];
+
+    	boardCells[r] = new Array(row.length);
+    	for (var c=0; c<row.length; c++) {
+			boardCells[r][c]= String.fromCharCode(row[c]);
+		}
+
+  	}
+
+	return boardCells;
+}
+
+GoMan.GameLogic.addPlayersToBoardCells = function(gameBoard, boardCells) {
+
+	// update 2D array with players positions
+
+	// TBD later...
+
+	return boardCells;
+}
+
+GoMan.GameLogic.getGameDetailsString = function(gameBoard) {
+
+var detailsString ="";
+	detailsString = "GameId:" + gameId + "\n";
+	detailsString += "FrameCount:" + frameCounter + "\n";
+	detailsString += "Pills Remaining:" + gameBoard.PillsRemaining + "\n";
+	detailsString += "Score:" + gameBoard.Score + "\n";
+	detailsString += "Lives:" + gameBoard.Lives + "\n";
+	detailsString += "GameState:" + gameBoard.State + "\n";
+	//detailsString += "PlayerState:" + gameBoard.MainPlayer.State + "\n";
+
+	return detailsString;	
+}
+GoMan.GameLogic.convertBoardCellsToASCII = function(boardCells) {
 
 	var asciiString ="";
-	asciiString = "GameId:" + gameId + "\n";
-	asciiString += "FrameCount:" + frameCounter + "\n";
-	asciiString += "Pills Remaining:" + gameBoard.PillsRemaining + "\n";
-	asciiString += "Score:" + gameBoard.Score + "\n";
-	asciiString += "Lives:" + gameBoard.Lives + "\n";
-	asciiString += "GameState:" + gameBoard.State + "\n";
-	asciiString += "PlayerState:" + gameBoard.MainPlayer.State + "\n";
 
-	for (var r = 0;r<gameBoard.BoardCells.length; r++) {
-		// process row
-		var row = gameBoard.BoardCells[r];
-		for (var c=0; c<row.length; c++) {
-			// process cells
-			if(r==playerY && c==playerX) {
-				asciiString+= "G";
-			} else {
-				asciiString+= String.fromCharCode(row[c]);
-			}
+	for (var r = 0;r<boardCells.length; r++) {
+		for (var c=0; c<boardCells[r].length; c++) {
+			asciiString+= boardCells[r][c];
 		}
 		// newline
 		asciiString+="\n";
 	}
-
 	return asciiString;
 }

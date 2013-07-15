@@ -39,6 +39,8 @@ GoMan.APIUtils.asyncPOST  = function ( url, body, onLoaded, onError ) {
 
 	var xhr = new XMLHttpRequest();
 
+	var jsonBody = JSON.stringify(body);
+
 	xhr.onreadystatechange = function () {
 
 		if ( xhr.readyState === 4 ) {
@@ -51,7 +53,7 @@ GoMan.APIUtils.asyncPOST  = function ( url, body, onLoaded, onError ) {
 
 			} else {
 
-				var errorDesc = "GoMan.APIUtils.asyncPOST: Error getting [" + url + "] [" + xhr.status + "]";
+				var errorDesc = "GoMan.APIUtils.asyncPOST: Error creating [" + url + "] [" + xhr.status + "]"+ xhr.responseText;
 				onError(errorDesc);
 
 			}
@@ -61,8 +63,8 @@ GoMan.APIUtils.asyncPOST  = function ( url, body, onLoaded, onError ) {
 	};
 	
 	xhr.open( "POST", url, true );
-	xhr.send( null );
-	
+	xhr.setRequestHeader('Content-Type', 'application/json');
+	xhr.send( jsonBody );
 };
 
 GoMan.APIUtils.asyncPUT  = function ( url, body, onLoaded, onError ) {
@@ -83,7 +85,7 @@ GoMan.APIUtils.asyncPUT  = function ( url, body, onLoaded, onError ) {
 
 			} else {
 
-				var errorDesc = "GoMan.APIUtils.asyncPUT: Error getting [" + url + "] [" + xhr.status + "]";
+				var errorDesc = "GoMan.APIUtils.asyncPUT: Error updating [" + url + "] [" + xhr.status + "]" + xhr.responseText;
 				onError(errorDesc);
 
 			}
