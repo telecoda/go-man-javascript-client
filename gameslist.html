@@ -55,7 +55,9 @@
 		      </table>				
 			</div>
 
-			<div class="jumbotron">			<a id="refreshButton" class="btn btn-large btn-success" href="#">Refresh</a>
+			<div class="jumbotron">
+				<a id="refreshButton" class="btn btn-large btn-success" href="#">Refresh</a>
+				<a id="newGameButton" class="btn btn-large btn-success" href="#">New Game</a>
 			</div>
 			<hr>
 
@@ -68,6 +70,34 @@
 			</div>
 
 		</div>
+
+		<!-- dialog stuff that is not initially displayed -->
+		<div id="newGameDialogBox" class="modal hide fade in" style="display: none; " data-backdrop="static" data-keyboard="false">
+			<div class="modal-header">
+				<h3 id="newGameDialogHeading">Start New GoMan Game</h3>
+			</div>
+			<div class="modal-body">
+				<h4 id="newGameDialogSubHeading">Options:-</h4>
+				<p id="newGameDialogParagraph">
+					Enter a name for the game so others can easily find it.  Also enter your player's name.
+				</p>
+				<ul  class="unstyled">
+					<li class="divider"></li>
+						<li><a href="#">Game name:</a><input type="text" id="edit-game-name"></li>
+						<li><a href="#">Player name:</a><input type="text" id="edit-player-name"></li>
+						<br>
+						<li><input type="radio" name="playerType" value="GoMan" checked> GoMan<br>
+						<input type="radio" name="playerType" value="GoGhost"> GoGhost<br></li>
+						<br>
+						<li class="unstyled"><a href="#" class="btn btn-primary pull-right" id="cancelActionButton">Cancel</a>
+						<li class="unstyled"><a href="#" class="btn btn-primary btn-success" id="startGameActionButton">Start Game</a></li>
+					</li>
+				</ul>
+
+			</div>
+			<div class="modal-footer">
+			</div>
+		</div>
 		
 		<script type="text/javascript">
 			'use strict';
@@ -77,6 +107,10 @@
 			  $("#refreshButton").click(function() {
 					GoMan.GameLogic.fetchGameList("waiting");
 				});
+			  $("#newGameButton").click(function() {
+					GoMan.GameLogic.showCreateGameDialog();
+				});
+
 			});
 		</script>
 	</body>

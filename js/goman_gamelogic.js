@@ -11,6 +11,12 @@ var stats = new Stats();
 var asciiBoard;
 var frameCounter=0;
 
+var gameName = "Dummy Game Name";
+var playerName = "Dummy Player Name";
+var playerType = "GoMan";
+
+var player;
+
 var upKey = 'w'.charCodeAt(0);
 var downKey = 's'.charCodeAt(0);
 var leftKey = 'a'.charCodeAt(0);
@@ -45,7 +51,50 @@ var myOnKeyPress = function(event) {
 	
 }
 
+GoMan.GameLogic.showCreateGameDialog = function() {
 
+	// setup button
+	$("#startGameActionButton").unbind('click');
+	$("#startGameActionButton").click(GoMan.GameLogic.createNewGameClicked);
+
+	$("#cancelActionButton").unbind('click');
+	$("#cancelActionButton").click(GoMan.GameLogic.cancelActionClicked);
+	
+	$("#edit-game-name").val(gameName)
+	$("#edit-player-name").val(playerName)
+
+	$("#newGameDialogBox").modal("show");
+
+}
+
+GoMan.GameLogic.cancelActionClicked = function() {
+	// hide dialog
+	$("#newGameDialogBox").modal("hide");
+
+}
+
+GoMan.GameLogic.createNewGameClicked = function() {
+	
+	$("#newGameDialogBox").modal("hide");
+
+	// get details
+	gameName = $("#edit-game-name").val();
+	playerName = $("#edit-player-name").val();
+	playerType = $('input:radio[name=playerType]:checked').val()
+	console.log("New game:" + gameName);
+	console.log("for Player:" + playerName);
+	console.log("Player Type:" + playerType);
+
+
+	// request a new game from server
+	url = 'http://localhost:8080/games';
+
+	GoMan.APIUtils.asyncPOST(url, null, GoMan.GameLogic.onGameCreated
+		, GoMan.GameLogic.onError);
+
+		
+}
+/*
 GoMan.GameLogic.startNewGame = function() {
 	
 	stats.setMode(0); // 0: fps, 1: ms
@@ -71,7 +120,7 @@ GoMan.GameLogic.startNewGame = function() {
 		, GoMan.GameLogic.onError);
 
 		
-}
+} */
 
 GoMan.GameLogic.fetchGameList = function(filterByState) {
 	
@@ -201,17 +250,64 @@ GoMan.GameLogic.onGameListLoaded = function(gameSummaryData) {
 
 }
 
+GoMan.GameLogic.onGameCreated = function(gameData) {
+		
+	// convert json to an object
+	gameBoard = JSON.parse(gameData);
+
+	gameId = gameBoard.Id;
+
+	GoMan.GameLogic.addPlayerToGame(gameId, gameName, playerName, playerType);
+
+}
+
+GoMan.GameLogic.addPlayerToGame = function(gameId, gameName, playerName, playerType) {
+
+	// now add first player to game
+	url = 'http://localhost:8080/games/'+gameId + "players";
+
+	var newPlayer = {};
+
+	newPlayer['playerName'] = playerName;
+	newPlayer['playerType'] = playerType;
+
+	GoMan.APIUtils.asyncPOST(url, newPlayer , GoMan.GameLogic.onPlayerAdded
+		, GoMan.GameLogic.onError);
+
+}
+
+GoMan.GameLogic.onPlayerAdded = function(playerAdded) {
+
+	// convert json to an object
+	player = JSON.parse(playerAdded);
+
+	// game has been created
+
+	// redirect to game board
+
+	redirect('game.html');
+
+	// now wait for remaining players
+
+	//frameCounter=0;
+
+	// start render loop
+	//requestAnimationFrame(renderGame);
+
+}
+
+
 // called at the beginning of the game
 GoMan.GameLogic.onGameStart = function(gameData) {
 		
-		// convert json to an object
-		gameBoard = JSON.parse(gameData);
+	// convert json to an object
+	gameBoard = JSON.parse(gameData);
 
-		gameId = gameBoard.Id;
-		frameCounter=0;
+	gameId = gameBoard.Id;
+	frameCounter=0;
 
-		// start render loop
-		requestAnimationFrame(renderGame);
+	// start render loop
+	requestAnimationFrame(renderGame);
 
 }
 
@@ -219,14 +315,14 @@ GoMan.GameLogic.onGameStart = function(gameData) {
 // called every update
 GoMan.GameLogic.onGameUpdate = function(gameData) {
 		
-		// convert json to an object
-		gameBoard = JSON.parse(gameData);
+	// convert json to an object
+	gameBoard = JSON.parse(gameData);
 
-		frameCounter++;
+	frameCounter++;
 
-		asciiBoard = GoMan.GameLogic.convertBoardToASCII(gameBoard);
+	asciiBoard = GoMan.GameLogic.convertBoardToASCII(gameBoard);
 
-		$("#gameboard").text(asciiBoard);
+	$("#gameboard").text(asciiBoard);
 }
 
 GoMan.GameLogic.onError = function(error) {
