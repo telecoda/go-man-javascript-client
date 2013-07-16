@@ -45,7 +45,7 @@ GoMan.APIUtils.asyncPOST  = function ( url, body, onLoaded, onError ) {
 
 		if ( xhr.readyState === 4 ) {
 
-			if ( xhr.status === 200 || xhr.status === 0 ) {
+			if ( xhr.status === 200 ) {
 
 				var fileData = xhr.responseText;
 				
@@ -77,7 +77,7 @@ GoMan.APIUtils.asyncPUT  = function ( url, body, onLoaded, onError ) {
 
 		if ( xhr.readyState === 4 ) {
 
-			if ( xhr.status === 200 || xhr.status === 0 ) {
+			if ( xhr.status === 200) {
 
 				var fileData = xhr.responseText;
 				

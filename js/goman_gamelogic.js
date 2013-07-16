@@ -365,6 +365,21 @@ GoMan.GameLogic.addPlayersToBoardCells = function(gameBoard, boardCells) {
 	// update 2D array with players positions
 
 	// TBD later...
+	for(var p=0; p < gameBoard.Players.length; p++) {
+		var player = gameBoard.Players[p];
+
+		var x = player.Location.X;
+		var y = player.Location.Y;
+
+		// note x,y co-ords are transposed because 2d array
+		// contains row/column NOT column/row
+		if (player.Type == "goman") {
+			boardCells[y][x] = "M";
+		} else {
+			// must be a ghost
+			boardCells[y][x] = "G";
+		}
+	}
 
 	return boardCells;
 }
