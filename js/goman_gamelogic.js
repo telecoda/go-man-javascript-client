@@ -18,7 +18,7 @@ var playerName = "Dummy Player Name";
 var playerType = "GoMan";
 var playerId = localStorage.getItem('playerId');
 
-var player;
+var myPlayer;
 
 var upKey = 'w'.charCodeAt(0);
 var downKey = 's'.charCodeAt(0);
@@ -163,11 +163,12 @@ renderGame = function() {
 moveRight = function() {
 	console.log("move right");
 
-	gameBoard.MainPlayer.Location.X++;
+	myPlayer.Location.X++;
 
-	url = 'http://localhost:8080/games/'+gameId;
+	url = 'http://localhost:8080/games/'+gameId+"/players/"+playerId;
 
-	GoMan.APIUtils.asyncPUT(url, gameBoard.MainPlayer , GoMan.GameLogic.onGameUpdate
+	console.log("Putting to url:" + url);
+	GoMan.APIUtils.asyncPUT(url, myPlayer , GoMan.GameLogic.onGameUpdate
 		, GoMan.GameLogic.onError);
 
 }
@@ -176,45 +177,48 @@ moveRight = function() {
 moveLeft = function() {
 	console.log("move left");	
 
-	gameBoard.MainPlayer.Location.X--;
 
-	url = 'http://localhost:8080/games/'+gameId;
+	myPlayer.Location.X--;
 
-	GoMan.APIUtils.asyncPUT(url, gameBoard.MainPlayer , GoMan.GameLogic.onGameUpdate
+	url = 'http://localhost:8080/games/'+gameId+"/players/"+playerId;
+
+	console.log("Putting to url:" + url);
+	GoMan.APIUtils.asyncPUT(url, myPlayer , GoMan.GameLogic.onGameUpdate
 		, GoMan.GameLogic.onError);
 
 }
 
 
 moveUp = function() {
-		console.log("move up");
+	console.log("move up");
 
-		gameBoard.MainPlayer.Location.Y--;
+	myPlayer.Location.Y--;
 
-		url = 'http://localhost:8080/games/'+gameId;
+	url = 'http://localhost:8080/games/'+gameId+"/players/"+playerId;
 
-		GoMan.APIUtils.asyncPUT(url, gameBoard.MainPlayer , GoMan.GameLogic.onGameUpdate
-			, GoMan.GameLogic.onError);
+	console.log("Putting to url:" + url);
+	GoMan.APIUtils.asyncPUT(url, myPlayer , GoMan.GameLogic.onGameUpdate
+		, GoMan.GameLogic.onError);
 
 }
 
 
 moveDown = function() {
-		console.log("move down");
+	console.log("move down");
 
-		gameBoard.MainPlayer.Location.Y++;
+	myPlayer.Location.Y++;
 
-		url = 'http://localhost:8080/games/'+gameId;
+	url = 'http://localhost:8080/games/'+gameId+"/players/"+playerId;
 
-		GoMan.APIUtils.asyncPUT(url, gameBoard.MainPlayer , GoMan.GameLogic.onGameUpdate
-			, GoMan.GameLogic.onError);
+	console.log("Putting to url:" + url);
+	GoMan.APIUtils.asyncPUT(url, myPlayer , GoMan.GameLogic.onGameUpdate
+		, GoMan.GameLogic.onError);
 
 }
 
 
 GoMan.GameLogic.getGameById = function(id) {
 	
-
 	url = 'http://localhost:8080/games/'+id;
 
 	GoMan.APIUtils.asyncGET(url, GoMan.GameLogic.onGameUpdate
@@ -326,6 +330,8 @@ GoMan.GameLogic.onGameUpdate = function(gameData) {
 
 	frameCounter++;
 
+	// retrieve myPlayer
+	myPlayer = GoMan.GameLogic.getMyPlayer(gameBoard,playerId);
 	// convert game data to 2d array
 	boardCells = GoMan.GameLogic.convertBoardTo2DArray(gameBoard);
 
@@ -342,6 +348,19 @@ GoMan.GameLogic.onGameUpdate = function(gameData) {
 
 GoMan.GameLogic.onError = function(error) {
 	alert(error)
+}
+
+GoMan.GameLogic.getMyPlayer = function(gameBoard, playerId) {
+
+	for(var p=0; p < gameBoard.Players.length; p++) {
+		var player = gameBoard.Players[p];
+
+
+		if (player.Id == playerId) {
+			return player;
+		} 
+	}
+
 }
 
 GoMan.GameLogic.convertBoardTo2DArray = function(gameBoard) {
@@ -363,8 +382,6 @@ GoMan.GameLogic.convertBoardTo2DArray = function(gameBoard) {
 GoMan.GameLogic.addPlayersToBoardCells = function(gameBoard, boardCells) {
 
 	// update 2D array with players positions
-
-	// TBD later...
 	for(var p=0; p < gameBoard.Players.length; p++) {
 		var player = gameBoard.Players[p];
 
