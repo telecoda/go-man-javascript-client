@@ -352,14 +352,7 @@ GoMan.GameLogic.onError = function(error) {
 
 GoMan.GameLogic.getMyPlayer = function(gameBoard, playerId) {
 
-	for(var p=0; p < gameBoard.Players.length; p++) {
-		var player = gameBoard.Players[p];
-
-
-		if (player.Id == playerId) {
-			return player;
-		} 
-	}
+	return gameBoard.Players[playerId];
 
 }
 
@@ -382,8 +375,9 @@ GoMan.GameLogic.convertBoardTo2DArray = function(gameBoard) {
 GoMan.GameLogic.addPlayersToBoardCells = function(gameBoard, boardCells) {
 
 	// update 2D array with players positions
-	for(var p=0; p < gameBoard.Players.length; p++) {
-		var player = gameBoard.Players[p];
+
+	for (id in Object(gameBoard.Players))  {
+		var player = gameBoard.Players[id];
 
 		var x = player.Location.X;
 		var y = player.Location.Y;
