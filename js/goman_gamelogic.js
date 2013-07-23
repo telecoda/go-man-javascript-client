@@ -410,6 +410,7 @@ var detailsString ="";
 	detailsString += "Score:" + gameBoard.Score + "\n";
 	detailsString += "Lives:" + gameBoard.Lives + "\n";
 	detailsString += "GameState:" + gameBoard.State + "\n";
+	detailsString += "PowerPillActive:" + gameBoard.PowerPillActive + "\n";
 	//detailsString += "PlayerState:" + gameBoard.MainPlayer.State + "\n";
 
 	return detailsString;	
