@@ -237,18 +237,33 @@ GoMan.GameLogic.onGameListLoaded = function(gameSummaryData) {
 
 	for(var i=0;i<gameListSummary.length;i++) {
 		var game = gameListSummary[i];
-		if(game.Players) {
+		// count players in game
+		totalGoMen = 0;
+		totalGoGhosts =0;
+		for (id in Object(game.Players))  {
+			var player = game.Players[id];
+			if (player.Type == "goman") {
+				totalGoMen++;
+			} else {
+				totalGoGhosts++;
+			}
+		}
+
+		totalPlayers = totalGoMen + totalGoGhosts;
+		/*if(game.Players) {
 			totalPlayers = game.Players.length;
 		} else {
 			totalPlayers = 0;
-		}
+		}*/
 		gameHTML = "<tr>"
 			+ "<td>"+game.Id +"</td>"
+			+ "<td><a id=\"joinButton\" class=\"btn btn-small btn-success\" href=\"#\">Join</a></td>"
 			+ "<td>"+game.State +"</td>"
-			+ "<td>"+game.CreatedTime +"</td>"
-			+ "<td>"+totalPlayers +"</td>"
-			+ "<td>"+game.GameStartTime +"</td>"
-			+ "</tr>";
+			+ "<td>"+totalGoMen +"</td>"
+			+ "<td>"+totalGoGhosts +"</td>"
+			//+ "<td>"+game.GameStartTime +"</td>"
+			+ "<td>"+parseInt((Date.parse(game.GameStartTime) - Date.now() )/1000 )+" seconds </td>"
+						+ "</tr>";
 
 		$("#gameListTable tbody").append(gameHTML); 
 
