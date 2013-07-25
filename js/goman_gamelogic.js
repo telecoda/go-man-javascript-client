@@ -56,34 +56,80 @@ var myOnKeyPress = function(event) {
 
 GoMan.GameLogic.showCreateGameDialog = function() {
 
-	// setup button
+	// setup buttons
 	$("#startGameActionButton").unbind('click');
 	$("#startGameActionButton").click(GoMan.GameLogic.createNewGameClicked);
 
-	$("#cancelActionButton").unbind('click');
-	$("#cancelActionButton").click(GoMan.GameLogic.cancelActionClicked);
+	$("#cancelStartActionButton").unbind('click');
+	$("#cancelStartActionButton").click(GoMan.GameLogic.cancelStartActionClicked);
 	
-	$("#edit-game-name").val(gameName)
-	$("#edit-player-name").val(playerName)
+	$("#new-game-name").val(gameName)
+	$("#new-player-name").val(playerName)
 
 	$("#newGameDialogBox").modal("show");
 
 }
 
-GoMan.GameLogic.cancelActionClicked = function() {
+GoMan.GameLogic.startShowJoinGameDialog = function(joinGameId) {
+
+	// fetch game details
+	url = 'http://localhost:8080/games/' + gameId;
+	// fetch game data to join game
+	GoMan.APIUtils.asyncGET(url, GoMan.GameLogic.showJoinGameDialog
+		, GoMan.GameLogic.onError);
+
+}
+
+GoMan.GameLogic.showJoinGameDialog = function(gameData) {
+
+	// convert json to an object
+	gameBoard = JSON.parse(gameData);
+
+	// setup buttons
+	$("#joinGameActionButton").unbind('click');
+	$("#joinGameActionButton").click(GoMan.GameLogic.joinGameClicked);
+
+	$("#cancelJoinActionButton").unbind('click');
+	$("#cancelJoinActionButton").click(GoMan.GameLogic.cancelJoinActionClicked);
+	
+	$("#join-game-id").val(gameBoard.Id)
+	
+	$("#join-game-name").val(gameBoard.Name)
+
+	goMenCount = GoMan.GameLogic.countGoMen(gameBoard.Players);
+	goGhostCount = GoMan.GameLogic.countGoGhosts(gameBoard.Players);
+	
+	$("#join-gomen-count").val(goMenCount + "/" + gameBoard.MaxGoMenAllowed)
+	$("#join-goghost-count").val(goGhostCount+ "/" + gameBoard.MaxGoGhostsAllowed)
+
+	$("#join-player-name").val(playerName)
+
+	$("#joinGameDialogBox").modal("show");
+
+}
+
+
+GoMan.GameLogic.cancelStartActionClicked = function() {
 	// hide dialog
 	$("#newGameDialogBox").modal("hide");
 
 }
+
+GoMan.GameLogic.cancelJoinActionClicked = function() {
+	// hide dialog
+	$("#joinGameDialogBox").modal("hide");
+
+}
+
 
 GoMan.GameLogic.createNewGameClicked = function() {
 	
 	$("#newGameDialogBox").modal("hide");
 
 	// get details
-	gameName = $("#edit-game-name").val();
-	playerName = $("#edit-player-name").val();
-	playerType = $('input:radio[name=playerType]:checked').val()
+	gameName = $("#new-game-name").val();
+	playerName = $("#new-player-name").val();
+	playerType = $('input:radio[name=newPlayerType]:checked').val()
 	console.log("New game:" + gameName);
 	console.log("for Player:" + playerName);
 	console.log("Player Type:" + playerType);
@@ -97,6 +143,28 @@ GoMan.GameLogic.createNewGameClicked = function() {
 
 		
 }
+
+GoMan.GameLogic.joinGameClicked = function() {
+	
+	$("#joinGameDialogBox").modal("hide");
+
+	// get details
+	gameName = $("#join-game-name").val();
+	gameId = $("#join-game-id").val();
+	playerName = $("#join-player-name").val();
+	playerType = $('input:radio[name=joinPlayerType]:checked').val()
+	console.log("Join game:" + gameName);
+	console.log("for Player:" + playerName);
+	console.log("Player Type:" + playerType);
+
+
+	// save gameId in local storage
+	localStorage.setItem('gameId',gameId);
+
+	GoMan.GameLogic.addPlayerToGame(gameId, gameName, playerName, playerType);
+		
+}
+
 
 
 GoMan.GameLogic.startGame = function() {
@@ -238,29 +306,15 @@ GoMan.GameLogic.onGameListLoaded = function(gameSummaryData) {
 	for(var i=0;i<gameListSummary.length;i++) {
 		var game = gameListSummary[i];
 		// count players in game
-		totalGoMen = 0;
-		totalGoGhosts =0;
-		for (id in Object(game.Players))  {
-			var player = game.Players[id];
-			if (player.Type == "goman") {
-				totalGoMen++;
-			} else {
-				totalGoGhosts++;
-			}
-		}
-
-		totalPlayers = totalGoMen + totalGoGhosts;
-		/*if(game.Players) {
-			totalPlayers = game.Players.length;
-		} else {
-			totalPlayers = 0;
-		}*/
+		totalGoMen = GoMan.GameLogic.countGoMen(game.Players);
+		totalGoGhosts =GoMan.GameLogic.countGoGhosts(game.Players);
+		
 		gameHTML = "<tr>"
 			+ "<td>"+game.Id +"</td>"
-			+ "<td><a id=\"joinButton\" class=\"btn btn-small btn-success\" href=\"#\">Join</a></td>"
+			+ "<td><a id=\"joinGameButton\" class=\"btn btn-small btn-primary\" href=\"#\" onclick=GoMan.GameLogic.startShowJoinGameDialog(\""+game.Id+"\")>Join</a></td>"
 			+ "<td>"+game.State +"</td>"
-			+ "<td>"+totalGoMen +"</td>"
-			+ "<td>"+totalGoGhosts +"</td>"
+			+ "<td>"+totalGoMen +"/" + game.MaxGoMenAllowed+"</td>"
+			+ "<td>"+totalGoGhosts +"/" + game.MaxGoGhostsAllowed+"</td>"
 			//+ "<td>"+game.GameStartTime +"</td>"
 			+ "<td>"+parseInt((Date.parse(game.GameStartTime) - Date.now() )/1000 )+" seconds </td>"
 						+ "</tr>";
@@ -269,8 +323,30 @@ GoMan.GameLogic.onGameListLoaded = function(gameSummaryData) {
 
 	}
 
-
 }
+
+GoMan.GameLogic.countGoGhosts = function(players) {
+	totalGoGhosts = 0;
+	for (id in Object(players))  {
+		var player = players[id];
+		if (player.Type == "goghost") {
+			totalGoGhosts++;
+		}
+	}
+	return totalGoGhosts;
+}
+
+GoMan.GameLogic.countGoMen = function(players) {
+totalGoMen = 0;
+	for (id in Object(players))  {
+		var player = players[id];
+		if (player.Type == "goman") {
+			totalGoMen++;
+		}
+	}
+	return totalGoMen;	
+}
+
 
 GoMan.GameLogic.onGameCreated = function(gameData) {
 		
@@ -311,13 +387,6 @@ GoMan.GameLogic.onPlayerAdded = function(playerAdded) {
 	// redirect to game board
 
 	window.location.replace('game.html');
-
-	// now wait for remaining players
-
-	//frameCounter=0;
-
-	// start render loop
-	//requestAnimationFrame(renderGame);
 
 }
 

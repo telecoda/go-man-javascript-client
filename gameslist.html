@@ -86,13 +86,13 @@
 				</p>
 				<ul  class="unstyled">
 					<li class="divider"></li>
-						<li><a href="#">Game name:</a><input type="text" id="edit-game-name"></li>
-						<li><a href="#">Player name:</a><input type="text" id="edit-player-name"></li>
+						<li><a href="#">Game name:</a><input type="text" id="new-game-name"></li>
+						<li><a href="#">Player name:</a><input type="text" id="new-player-name"></li>
 						<br>
-						<li><input type="radio" name="playerType" value="goman" checked> GoMan<br>
-						<input type="radio" name="playerType" value="goghost"> GoGhost<br></li>
+						<li><input type="radio" name="newPlayerType" value="goman" checked> GoMan<br>
+						<input type="radio" name="newPlayerType" value="goghost"> GoGhost<br></li>
 						<br>
-						<li class="unstyled"><a href="#" class="btn btn-primary pull-right" id="cancelActionButton">Cancel</a>
+						<li class="unstyled"><a href="#" class="btn btn-primary pull-right" id="cancelStartActionButton">Cancel</a>
 						<li class="unstyled"><a href="#" class="btn btn-primary btn-success" id="startGameActionButton">Start Game</a></li>
 					</li>
 				</ul>
@@ -102,6 +102,37 @@
 			</div>
 		</div>
 		
+		<!-- dialog stuff that is not initially displayed -->
+		<div id="joinGameDialogBox" class="modal hide fade in" style="display: none; " data-backdrop="static" data-keyboard="false">
+			<div class="modal-header">
+				<h3 id="joinGameDialogHeading">Join GoMan Game</h3>
+			</div>
+			<div class="modal-body">
+				<h4 id="joinGameDialogSubHeading">Options:-</h4>
+				<p id="joinGameDialogParagraph">
+					Enter your player's name.
+				</p>
+				<ul  class="unstyled">
+					<li class="divider"></li>
+						<li><a href="#">Game id:</a><input type="text" id="join-game-id"></li>
+						<li><a href="#">Game name:</a><input type="text" id="join-game-name"></li>
+						<li><a href="#">GoMen:</a><input type="text" id="join-gomen-count"></li>
+						<li><a href="#">GoGhosts:</a><input type="text" id="join-goghost-count"></li>
+						<li><a href="#">Player name:</a><input type="text" id="join-player-name"></li>
+						<br>
+						<li><input type="radio" name="joinPlayerType" value="goman" checked> GoMan<br>
+						<input type="radio" name="joinPlayerType" value="goghost"> GoGhost<br></li>
+						<br>
+						<li class="unstyled"><a href="#" class="btn btn-primary pull-right" id="cancelJoinActionButton">Cancel</a>
+						<li class="unstyled"><a href="#" class="btn btn-primary btn-success" id="joinGameActionButton">Join Game</a></li>
+					</li>
+				</ul>
+
+			</div>
+			<div class="modal-footer">
+			</div>
+		</div>
+
 		<script type="text/javascript">
 			'use strict';
 			
@@ -114,6 +145,8 @@
 					GoMan.GameLogic.showCreateGameDialog();
 				});
 
+			  // load games on page load
+			  GoMan.GameLogic.fetchGameList("waiting");
 			});
 		</script>
 	</body>
