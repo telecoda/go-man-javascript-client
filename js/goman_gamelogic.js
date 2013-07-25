@@ -5,7 +5,11 @@ GoMan.GameLogic = function() {
 };
 
 
-var gameHost = "http://localhost:8080"
+var gameHost = localStorage.getItem('gameHost');
+
+if (gameHost == undefined) {
+	gameHost = "http://localhost:8080"
+}
 
 var gameBoard;
 var boardCells;

@@ -32,7 +32,9 @@
 			</div>
 
 			<hr>
-
+			<div>
+				Game Server:<input type="text" id="game-host">
+			</div>
 			<div class="jumbotron">
 				<table class="table table-striped" id="gameListTable">
 		        <thead>
@@ -143,6 +145,14 @@
 				});
 			  $("#newGameButton").click(function() {
 					GoMan.GameLogic.showCreateGameDialog();
+				});
+			  
+			  $("#game-host").val(gameHost)
+				
+			  $("#game-host").blur(function() {
+			  		// save changed host details
+			  		gameHost = $("#game-host").val();
+			  		localStorage.setItem('gameHost',gameHost);
 				});
 
 			  // load games on page load
