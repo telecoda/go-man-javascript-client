@@ -5,6 +5,8 @@ GoMan.GameLogic = function() {
 };
 
 
+var gameHost = "http://localhost:8080"
+
 var gameBoard;
 var boardCells;
 var gameId = localStorage.getItem('gameId');
@@ -73,7 +75,7 @@ GoMan.GameLogic.showCreateGameDialog = function() {
 GoMan.GameLogic.startShowJoinGameDialog = function(joinGameId) {
 
 	// fetch game details
-	url = 'http://localhost:8080/games/' + gameId;
+	url = gameHost+'/games/' + gameId;
 	// fetch game data to join game
 	GoMan.APIUtils.asyncGET(url, GoMan.GameLogic.showJoinGameDialog
 		, GoMan.GameLogic.onError);
@@ -136,7 +138,7 @@ GoMan.GameLogic.createNewGameClicked = function() {
 
 
 	// request a new game from server
-	url = 'http://localhost:8080/games';
+	url = gameHost+'/games';
 
 	GoMan.APIUtils.asyncPOST(url, null, GoMan.GameLogic.onGameCreated
 		, GoMan.GameLogic.onError);
@@ -185,7 +187,7 @@ GoMan.GameLogic.startGame = function() {
 	document.removeEventListener('keypress', myOnKeyPress, false);
 	document.addEventListener('keypress', myOnKeyPress, false);
 
-	url = 'http://localhost:8080/games/' + gameId;
+	url = gameHost+'/games/' + gameId;
 	// fetch game data for newly created game
 	GoMan.APIUtils.asyncGET(url, GoMan.GameLogic.onGameStart
 		, GoMan.GameLogic.onError);
@@ -199,7 +201,7 @@ GoMan.GameLogic.fetchGameList = function(filterByState) {
 	
 
 	// get a list of games from the server
-	url = 'http://localhost:8080/games';
+	url = gameHost+'/games';
 
 	if(filterByState) {
 		url += "?state=" + filterByState;
@@ -233,7 +235,7 @@ moveRight = function() {
 
 	myPlayer.Location.X++;
 
-	url = 'http://localhost:8080/games/'+gameId+"/players/"+playerId;
+	url = gameHost+'/games/'+gameId+"/players/"+playerId;
 
 	console.log("Putting to url:" + url);
 	GoMan.APIUtils.asyncPUT(url, myPlayer , GoMan.GameLogic.onGameUpdate
@@ -248,7 +250,7 @@ moveLeft = function() {
 
 	myPlayer.Location.X--;
 
-	url = 'http://localhost:8080/games/'+gameId+"/players/"+playerId;
+	url = gameHost+'/games/'+gameId+"/players/"+playerId;
 
 	console.log("Putting to url:" + url);
 	GoMan.APIUtils.asyncPUT(url, myPlayer , GoMan.GameLogic.onGameUpdate
@@ -262,7 +264,7 @@ moveUp = function() {
 
 	myPlayer.Location.Y--;
 
-	url = 'http://localhost:8080/games/'+gameId+"/players/"+playerId;
+	url = gameHost+'/games/'+gameId+"/players/"+playerId;
 
 	console.log("Putting to url:" + url);
 	GoMan.APIUtils.asyncPUT(url, myPlayer , GoMan.GameLogic.onGameUpdate
@@ -276,7 +278,7 @@ moveDown = function() {
 
 	myPlayer.Location.Y++;
 
-	url = 'http://localhost:8080/games/'+gameId+"/players/"+playerId;
+	url = gameHost+'/games/'+gameId+"/players/"+playerId;
 
 	console.log("Putting to url:" + url);
 	GoMan.APIUtils.asyncPUT(url, myPlayer , GoMan.GameLogic.onGameUpdate
@@ -287,7 +289,7 @@ moveDown = function() {
 
 GoMan.GameLogic.getGameById = function(id) {
 	
-	url = 'http://localhost:8080/games/'+id;
+	url = gameHost+'/games/'+id;
 
 	GoMan.APIUtils.asyncGET(url, GoMan.GameLogic.onGameUpdate
 		, GoMan.GameLogic.onError);
@@ -365,7 +367,7 @@ GoMan.GameLogic.onGameCreated = function(gameData) {
 GoMan.GameLogic.addPlayerToGame = function(gameId, gameName, playerName, playerType) {
 
 	// now add first player to game
-	url = 'http://localhost:8080/games/'+gameId + "/players";
+	url = gameHost+'/games/'+gameId + "/players";
 
 	var newPlayer = {};
 
