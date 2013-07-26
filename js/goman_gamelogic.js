@@ -322,13 +322,17 @@ GoMan.GameLogic.onGameListLoaded = function(gameSummaryData) {
 			+ "<td>"+totalGoMen +"/" + game.MaxGoMenAllowed+"</td>"
 			+ "<td>"+totalGoGhosts +"/" + game.MaxGoGhostsAllowed+"</td>"
 			//+ "<td>"+game.GameStartTime +"</td>"
-			+ "<td>"+parseInt((Date.parse(game.GameStartTime) - Date.now() )/1000 )+" seconds </td>"
+			+ "<td>"+GoMan.GameLogic.getSecondsTilStart(game.GameStartTime) +" seconds </td>"
 						+ "</tr>";
 
 		$("#gameListTable tbody").append(gameHTML); 
 
 	}
 
+}
+
+GoMan.GameLogic.getSecondsTilStart = function(startTime) {
+	return parseInt((Date.parse(startTime) - Date.now() )/1000 );
 }
 
 GoMan.GameLogic.countGoGhosts = function(players) {
@@ -507,11 +511,11 @@ var detailsString ="";
 	detailsString += "GameName:" + gameBoard.Name + "\n";
 	detailsString += "FrameCount:" + frameCounter + "\n";
 	detailsString += "Pills Remaining:" + gameBoard.PillsRemaining + "\n";
-	//detailsString += "Score:" + gameBoard.Score + "\n";
-	//detailsString += "Lives:" + gameBoard.Lives + "\n";
-	detailsString += "GameState:" + gameBoard.State + "\n";
+	detailsString += "GameState:" + gameBoard.State + "\n";		
+	if(gameBoard.State=="waiting") {
+		detailsString += GoMan.GameLogic.getSecondsTilStart(gameBoard.GameStartTime) +" seconds \n";
+	} 
 	detailsString += "PowerPillActive:" + gameBoard.PowerPillActive + "\n";
-	//detailsString += "PlayerState:" + gameBoard.MainPlayer.State + "\n";
 
 	return detailsString;	
 }
@@ -531,6 +535,7 @@ GoMan.GameLogic.getPlayerDetailsString = function(players, myPlayerId) {
 		} else {
 			playerDetailsString += "\n";
 		}
+	playerDetailsString +="Score:" + player.Score + " - Lives:" +player.Lives + "\n";
 
 	}
 	return playerDetailsString;	
