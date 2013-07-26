@@ -428,12 +428,14 @@ GoMan.GameLogic.onGameUpdate = function(gameData) {
 	// overlay players positions on boardCells
 	boardCells = GoMan.GameLogic.addPlayersToBoardCells(gameBoard,boardCells);
 	
-	// create header details
 	var detailsString = GoMan.GameLogic.getGameDetailsString(gameBoard);
-	// merge player po
+	var playerDetailsString = GoMan.GameLogic.getPlayerDetailsString(gameBoard.Players, playerId);
+
 	asciiBoard = GoMan.GameLogic.convertBoardCellsToASCII(boardCells);
 
-	$("#gameboard").text(detailsString + asciiBoard);
+	$("#gameboard").text(asciiBoard);
+	$("#gamestatus").text(detailsString + playerDetailsString);
+
 }
 
 GoMan.GameLogic.onError = function(error) {
@@ -474,11 +476,24 @@ GoMan.GameLogic.addPlayersToBoardCells = function(gameBoard, boardCells) {
 
 		// note x,y co-ords are transposed because 2d array
 		// contains row/column NOT column/row
-		if (player.Type == "goman") {
-			boardCells[y][x] = "M";
+		if(gameBoard.PowerPillActive) {
+			// powerpill active
+			if (player.Type == "goman") {
+				boardCells[y][x] = "M";
+			} else {
+				// must be a ghost
+				boardCells[y][x] = "g";
+			}
+
 		} else {
-			// must be a ghost
-			boardCells[y][x] = "G";
+			// powerpill not active
+			if (player.Type == "goman") {
+				boardCells[y][x] = "m";
+			} else {
+				// must be a ghost
+				boardCells[y][x] = "G";
+			}
+
 		}
 	}
 
@@ -489,16 +504,38 @@ GoMan.GameLogic.getGameDetailsString = function(gameBoard) {
 
 var detailsString ="";
 	detailsString = "GameId:" + gameId + "\n";
+	detailsString += "GameName:" + gameBoard.Name + "\n";
 	detailsString += "FrameCount:" + frameCounter + "\n";
 	detailsString += "Pills Remaining:" + gameBoard.PillsRemaining + "\n";
-	detailsString += "Score:" + gameBoard.Score + "\n";
-	detailsString += "Lives:" + gameBoard.Lives + "\n";
+	//detailsString += "Score:" + gameBoard.Score + "\n";
+	//detailsString += "Lives:" + gameBoard.Lives + "\n";
 	detailsString += "GameState:" + gameBoard.State + "\n";
 	detailsString += "PowerPillActive:" + gameBoard.PowerPillActive + "\n";
 	//detailsString += "PlayerState:" + gameBoard.MainPlayer.State + "\n";
 
 	return detailsString;	
 }
+
+GoMan.GameLogic.getPlayerDetailsString = function(players, myPlayerId) {
+
+	var playerDetailsString ="Players\n";
+	playerDetailsString += "=======\n";
+
+	for (id in Object(players))  {
+		var player = players[id];
+
+		playerDetailsString +="Player:" + player.Name + " - (" +player.Type + ")";
+
+		if(player.Id == playerId) {
+			playerDetailsString += "<--(you)\n"
+		} else {
+			playerDetailsString += "\n";
+		}
+
+	}
+	return playerDetailsString;	
+}
+
 GoMan.GameLogic.convertBoardCellsToASCII = function(boardCells) {
 
 	var asciiString ="";
