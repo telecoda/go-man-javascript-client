@@ -79,7 +79,7 @@ GoMan.GameLogic.showCreateGameDialog = function() {
 GoMan.GameLogic.startShowJoinGameDialog = function(joinGameId) {
 
 	// fetch game details
-	url = gameHost+'/games/' + gameId;
+	url = gameHost+'/games/' + joinGameId;
 	// fetch game data to join game
 	GoMan.APIUtils.asyncGET(url, GoMan.GameLogic.showJoinGameDialog
 		, GoMan.GameLogic.onError);
