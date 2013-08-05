@@ -480,7 +480,7 @@ GoMan.GameLogic.addPlayersToBoardCells = function(gameBoard, boardCells) {
 
 		// note x,y co-ords are transposed because 2d array
 		// contains row/column NOT column/row
-		if(gameBoard.PowerPillActive) {
+		if(gameBoard.PowerPillsActive > 0) {
 			// powerpill active
 			if (player.Type == "goman") {
 				boardCells[y][x] = "M";
@@ -515,7 +515,7 @@ var detailsString ="";
 	if(gameBoard.State=="waiting") {
 		detailsString += GoMan.GameLogic.getSecondsTilStart(gameBoard.GameStartTime) +" seconds \n";
 	} 
-	detailsString += "PowerPillActive:" + gameBoard.PowerPillActive + "\n";
+	detailsString += "PowerPillsActive:" + gameBoard.PowerPillsActive + "\n";
 
 	return detailsString;	
 }
