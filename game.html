@@ -42,7 +42,13 @@
 					<textarea id="gameboard" cols="28" rows="24" style="width: 300px; font-family: courier !important;"></textarea>
 				</div>
 			</div>
-
+			
+			<hr>
+			<div class="row-fluid marketing">
+				<canvas id='canvas' width='896' height='768'>
+    			    Canvas not supported
+     			</canvas>
+     		</div>
 			<hr>
 
 			<div class="row-fluid marketing">
@@ -62,9 +68,8 @@
 					</p>
 				</div>
 			</div>
-
+			
 			<hr>
-
 			<div class="footer">
 				<p>
 					&copy; Telecoda 2013
@@ -79,6 +84,15 @@
 			$(document).ready(function() {
 			 
 				GoMan.GameLogic.startGame();
+
+				/*var canvas = document.getElementById('canvas'),
+    			context = canvas.getContext('2d'),
+    			gomanImage = new Image();
+
+				gomanImage.src = 'images/go-man-32.png';
+				gomanImage.onload = function(e) {
+   					context.drawImage(gomanImage, 0, 0);
+				};*/
 
 			});
 		</script>

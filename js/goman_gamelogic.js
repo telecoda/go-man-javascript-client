@@ -33,6 +33,11 @@ var rightKey ='d'.charCodeAt(0);
 
 var keyAlreadyPressed = false;
 
+var canvas;
+var context;
+var gomanImage, ghostImage, wallImage, pillImage, powerPillImage;
+
+
 var myOnKeyPress = function(event) {
 
 		if(keyAlreadyPressed) {
@@ -184,6 +189,8 @@ GoMan.GameLogic.startGame = function() {
 
 	document.body.appendChild( stats.domElement );
 
+	GoMan.GameLogic.initImages();	
+
 	// hide start button
 	$("#startButton").addClass("hide");
 	
@@ -199,11 +206,55 @@ GoMan.GameLogic.startGame = function() {
 		
 } 
 
+GoMan.GameLogic.initImages = function() {
+
+	// setup canvas
+	canvas = document.getElementById('canvas');
+	context = canvas.getContext('2d');
+
+	gomanImage = new Image();
+	gomanImage.src = 'images/go-man-32.png';
+
+	ghostImage = new Image();
+	ghostImage.src = 'images/go-man-ghost-32.png';
+
+	wallImage = new Image();
+	wallImage.src = 'images/wall-32.png';
+
+	pillImage = new Image();
+	pillImage.src = 'images/pill-32.png';
+
+	powerPillImage = new Image();
+	powerPillImage.src = 'images/power-pill-32.png';
+
+	gomanImage.onload = function(e) {
+	   	context.drawImage(gomanImage, 0, 0);
+	};
+
+	ghostImage.onload = function(e) {
+	   	context.drawImage(ghostImage, 32, 0);
+	};
+
+	wallImage.onload = function(e) {
+	   	context.drawImage(wallImage, 64, 0);
+	};
+
+	pillImage.onload = function(e) {
+	   	context.drawImage(pillImage, 96, 0);
+	};
+
+	powerPillImage.onload = function(e) {
+	   	context.drawImage(powerPillImageImage, 128, 0);
+	};
+
+}
+
+GoMan.GameLogic.renderCanvas = function() {
+
+}
+
 GoMan.GameLogic.fetchGameList = function(filterByState) {
 	
-
-	
-
 	// get a list of games from the server
 	url = gameHost+'/games';
 
@@ -250,7 +301,6 @@ moveRight = function() {
 
 moveLeft = function() {
 	console.log("move left");	
-
 
 	myPlayer.Location.X--;
 
