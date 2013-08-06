@@ -35,7 +35,10 @@ var keyAlreadyPressed = false;
 
 var canvas;
 var context;
-var gomanImage, ghostImage, wallImage, pillImage, powerPillImage;
+var spriteImages = {};
+var spriteWidth=32;
+var spriteHeight=32;
+var boardImage;
 
 
 var myOnKeyPress = function(event) {
@@ -212,44 +215,76 @@ GoMan.GameLogic.initImages = function() {
 	canvas = document.getElementById('canvas');
 	context = canvas.getContext('2d');
 
+	boardImage = new Image();
+	boardImage.src = 'images/board.png';
+
+
 	gomanImage = new Image();
 	gomanImage.src = 'images/go-man-32.png';
+
+	spriteImages['m'] = gomanImage;
+	spriteImages['M'] = gomanImage;
 
 	ghostImage = new Image();
 	ghostImage.src = 'images/go-man-ghost-32.png';
 
-	wallImage = new Image();
-	wallImage.src = 'images/wall-32.png';
+	spriteImages['G'] = ghostImage;
+
+	redGhostImage = new Image();
+	redGhostImage.src = 'images/go-man-ghost-red-32.png';
+
+	spriteImages['g'] = redGhostImage;
+
+	//wallImage = new Image();
+	//wallImage.src = 'images/wall-32.png';
+
+	//spriteImages['#'] = wallImage;
 
 	pillImage = new Image();
 	pillImage.src = 'images/pill-32.png';
 
+	spriteImages['.'] = pillImage;
+
 	powerPillImage = new Image();
 	powerPillImage.src = 'images/power-pill-32.png';
 
-	gomanImage.onload = function(e) {
-	   	context.drawImage(gomanImage, 0, 0);
-	};
+	spriteImages['P'] = powerPillImage;
 
-	ghostImage.onload = function(e) {
-	   	context.drawImage(ghostImage, 32, 0);
-	};
-
-	wallImage.onload = function(e) {
-	   	context.drawImage(wallImage, 64, 0);
-	};
-
-	pillImage.onload = function(e) {
-	   	context.drawImage(pillImage, 96, 0);
-	};
-
-	powerPillImage.onload = function(e) {
-	   	context.drawImage(powerPillImageImage, 128, 0);
-	};
 
 }
 
-GoMan.GameLogic.renderCanvas = function() {
+GoMan.GameLogic.renderCanvas = function(gameBoard, boardCells) {
+
+	// clear canvas
+	//context.fillStyle = "grey";
+	//context.fillRect(0, 0, canvas.width, canvas.height);
+	context.drawImage(boardImage, 0, 0);
+	// update 2D array with players positions
+	GoMan.GameLogic.renderBoard(boardCells);
+	GoMan.GameLogic.renderHUD(boardCells);
+
+
+}
+
+GoMan.GameLogic.renderBoard = function(boardCells) {
+
+	for (var r = 0;r<boardCells.length; r++) {
+		for (var c=0; c<boardCells[r].length; c++) {
+			var spriteId = boardCells[r][c];
+			if(spriteImages[spriteId] != undefined) {
+				context.drawImage(spriteImages[spriteId], c * spriteWidth, r * spriteHeight);
+			}
+
+		}
+	}
+
+}
+
+GoMan.GameLogic.renderHUD = function(gameBoard) {
+
+	context.fillStyle = "yellow";
+  	context.font = "bold 16px Arial";
+  	context.fillText("Score", 15, 20);
 
 }
 
@@ -479,8 +514,12 @@ GoMan.GameLogic.onGameUpdate = function(gameData) {
 	// convert game data to 2d array
 	boardCells = GoMan.GameLogic.convertBoardTo2DArray(gameBoard);
 
+
 	// overlay players positions on boardCells
 	boardCells = GoMan.GameLogic.addPlayersToBoardCells(gameBoard,boardCells);
+
+	// render board + players
+	GoMan.GameLogic.renderCanvas(gameBoard, boardCells);
 	
 	var detailsString = GoMan.GameLogic.getGameDetailsString(gameBoard);
 	var playerDetailsString = GoMan.GameLogic.getPlayerDetailsString(gameBoard.Players, playerId);
@@ -489,6 +528,7 @@ GoMan.GameLogic.onGameUpdate = function(gameData) {
 
 	$("#gameboard").text(asciiBoard);
 	$("#gamestatus").text(detailsString + playerDetailsString);
+
 
 }
 
