@@ -229,18 +229,22 @@ GoMan.GameLogic.initImages = function() {
 	gomanImage = new Image();
 	gomanImage.src = 'images/go-man-32.png';
 
+	gomanDeadImage = new Image();
+	gomanDeadImage.src = 'images/go-man-red-32.png';
+
 	spriteImages['m'] = gomanImage;
 	spriteImages['M'] = gomanImage;
+	spriteImages['d'] = gomanDeadImage;
 
 	ghostImage = new Image();
 	ghostImage.src = 'images/go-man-ghost-32.png';
 
-	spriteImages['G'] = ghostImage;
+	spriteImages['g'] = ghostImage;
 
 	redGhostImage = new Image();
 	redGhostImage.src = 'images/go-man-ghost-red-32.png';
 
-	spriteImages['g'] = redGhostImage;
+	spriteImages['G'] = redGhostImage;
 
 	//wallImage = new Image();
 	//wallImage.src = 'images/wall-32.png';
@@ -683,7 +687,11 @@ GoMan.GameLogic.addPlayersToBoardCells = function(gameBoard, boardCells) {
 		if(gameBoard.PowerPillsActive > 0) {
 			// powerpill active
 			if (player.Type == "goman") {
-				boardCells[y][x] = "M";
+				if(player.State=="dying") {
+					boardCells[y][x]="d";
+				} else {
+					boardCells[y][x] = "M";					
+				}
 			} else {
 				// must be a ghost
 				boardCells[y][x] = "g";
@@ -692,7 +700,11 @@ GoMan.GameLogic.addPlayersToBoardCells = function(gameBoard, boardCells) {
 		} else {
 			// powerpill not active
 			if (player.Type == "goman") {
-				boardCells[y][x] = "m";
+				if(player.State=="dying") {
+					boardCells[y][x]="d";
+				} else {
+					boardCells[y][x] = "m";
+				}
 			} else {
 				// must be a ghost
 				boardCells[y][x] = "G";
