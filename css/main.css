@@ -104,4 +104,14 @@ body {
 	padding: 0px 0px;
 }
 
+#canvas {
+            margin-left: 0px;
+            margin-right: 0;
+            margin-top: 10px;
+            margin-bottom: 0px;
+            border: thin solid #aaaaaa;
+            cursor: crosshair;
+            padding: 0;
+         }
+
 

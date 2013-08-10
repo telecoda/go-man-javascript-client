@@ -19,8 +19,8 @@ var stats = new Stats();
 var asciiBoard;
 var frameCounter=0;
 
-var gameName = "Dummy Game Name";
-var playerName = "Dummy Player Name";
+var gameName = "<game name>";
+var playerName = "<your name>";
 var playerType = "GoMan";
 var playerId = localStorage.getItem('playerId');
 
@@ -32,6 +32,15 @@ var leftKey = 'a'.charCodeAt(0);
 var rightKey ='d'.charCodeAt(0);
 
 var keyAlreadyPressed = false;
+
+var canvas;
+var context;
+var spriteImages = {};
+var spriteWidth=32;
+var spriteHeight=32;
+
+var boardImage;
+
 
 var myOnKeyPress = function(event) {
 
@@ -134,17 +143,23 @@ GoMan.GameLogic.createNewGameClicked = function() {
 
 	// get details
 	gameName = $("#new-game-name").val();
+	maxGoMen = $("#new-max-gomen").val();
+	maxGoGhosts = $("#new-max-goghosts").val();
+	waitForPlayersSeconds = $("#new-wait-for-players-seconds").val();
 	playerName = $("#new-player-name").val();
 	playerType = $('input:radio[name=newPlayerType]:checked').val()
-	console.log("New game:" + gameName);
-	console.log("for Player:" + playerName);
-	console.log("Player Type:" + playerType);
+	
+	var newGame = {};
 
+	newGame['Name'] = gameName;
+	newGame['MaxGoMenAllowed'] = parseInt(maxGoMen);
+	newGame['MaxGoGhostsAllowed'] = parseInt(maxGoGhosts);
+	newGame['WaitForPlayersSeconds'] = parseInt(waitForPlayersSeconds);
 
 	// request a new game from server
 	url = gameHost+'/games';
 
-	GoMan.APIUtils.asyncPOST(url, null, GoMan.GameLogic.onGameCreated
+	GoMan.APIUtils.asyncPOST(url, newGame, GoMan.GameLogic.onGameCreated
 		, GoMan.GameLogic.onError);
 
 		
@@ -167,7 +182,7 @@ GoMan.GameLogic.joinGameClicked = function() {
 	// save gameId in local storage
 	localStorage.setItem('gameId',gameId);
 
-	GoMan.GameLogic.addPlayerToGame(gameId, gameName, playerName, playerType);
+	GoMan.GameLogic.addPlayerToGame(gameId, playerName, playerType);
 		
 }
 
@@ -184,6 +199,8 @@ GoMan.GameLogic.startGame = function() {
 
 	document.body.appendChild( stats.domElement );
 
+	GoMan.GameLogic.initImages();	
+
 	// hide start button
 	$("#startButton").addClass("hide");
 	
@@ -199,11 +216,185 @@ GoMan.GameLogic.startGame = function() {
 		
 } 
 
+GoMan.GameLogic.initImages = function() {
+
+	// setup canvas
+	canvas = document.getElementById('canvas');
+	context = canvas.getContext('2d');
+
+	boardImage = new Image();
+	boardImage.src = 'images/board.png';
+
+
+	gomanImage = new Image();
+	gomanImage.src = 'images/go-man-32.png';
+
+	gomanDeadImage = new Image();
+	gomanDeadImage.src = 'images/go-man-red-32.png';
+
+	spriteImages['m'] = gomanImage;
+	spriteImages['M'] = gomanImage;
+	spriteImages['d'] = gomanDeadImage;
+
+	ghostImage = new Image();
+	ghostImage.src = 'images/go-man-ghost-32.png';
+
+	spriteImages['g'] = ghostImage;
+
+	redGhostImage = new Image();
+	redGhostImage.src = 'images/go-man-ghost-red-32.png';
+
+	spriteImages['G'] = redGhostImage;
+
+	//wallImage = new Image();
+	//wallImage.src = 'images/wall-32.png';
+
+	//spriteImages['#'] = wallImage;
+
+	pillImage = new Image();
+	pillImage.src = 'images/pill-32.png';
+
+	spriteImages['.'] = pillImage;
+
+	powerPillImage = new Image();
+	powerPillImage.src = 'images/power-pill-32.png';
+
+	spriteImages['P'] = powerPillImage;
+
+
+}
+
+GoMan.GameLogic.renderCanvas = function(gameBoard, boardCells) {
+
+	// clear canvas
+	//context.fillStyle = "grey";
+	//context.fillRect(0, 0, canvas.width, canvas.height);
+	context.drawImage(boardImage, 0, 0);
+	// update 2D array with players positions
+	GoMan.GameLogic.renderBoard(boardCells);
+	GoMan.GameLogic.renderHUD(gameBoard);
+
+
+}
+
+GoMan.GameLogic.renderBoard = function(boardCells) {
+
+	for (var r = 0;r<boardCells.length; r++) {
+		for (var c=0; c<boardCells[r].length; c++) {
+			var spriteId = boardCells[r][c];
+			if(spriteImages[spriteId] != undefined) {
+				context.drawImage(spriteImages[spriteId], c * spriteWidth, r * spriteHeight);
+			}
+
+		}
+	}
+
+}
+
+GoMan.GameLogic.renderHUD = function(gameBoard) {
+
+	
+	GoMan.GameLogic.renderScores(gameBoard.Players);
+
+	GoMan.GameLogic.renderPlayers(gameBoard.Players);
+
+	GoMan.GameLogic.renderGameState(gameBoard);
+
+}
+
+GoMan.GameLogic.renderScores = function(players) {
+
+	var scores = "";
+	var yourScore = "";
+
+	for (id in Object(players))  {
+		var player = players[id];
+
+
+		if(player.Id == playerId) {
+			yourScore +=player.Name + ":(" + player.Score + ") - Lives:" +player.Lives;
+		} else {
+			scores +=" " +player.Name + ":(" + player.Score + ")";
+		}
+
+	}
+
+	context.fillStyle = "yellow";
+  	context.font = "bold 16px Arial";
+  	context.fillText(yourScore, 15, 20);
+  	var metrics = context.measureText(yourScore);
+	  	
+	context.fillStyle = "red";
+  	context.font = "bold 16px Arial";
+  	context.fillText(scores, 15 + metrics.width, 20);
+}
+
+GoMan.GameLogic.renderGameState = function(gameBoard) {
+
+	if(gameBoard.State!="playing") {
+  		var statusWidth = 200;
+  		var statusHeight = 100;
+  		var borderWidth = 10;
+  		// draw a status box
+  		context.fillStyle = "blue";
+  		context.fillRect(canvas.width/2 - statusWidth/2,
+  						 canvas.height/2 - statusHeight/2,
+  						 statusWidth, 
+  						 statusHeight);
+  		context.fillStyle = "black";
+  		context.fillRect(canvas.width/2 - statusWidth/2 + borderWidth,
+  						 canvas.height/2 - statusHeight/2 + borderWidth,
+  						 statusWidth - borderWidth*2,
+  						 statusHeight - borderWidth*2);
+
+  		var statusString;
+
+  		if(gameBoard.State=="waiting") {
+  			statusString = "Waiting: " + GoMan.GameLogic.getSecondsTilStart(gameBoard.GameStartTime) +" seconds"; 
+  		} else if(gameBoard.State=="over") {
+  			statusString = "Game Over"; 
+  		} else if(gameBoard.State=="won") {
+  			statusString = "Level Complete!"; 
+  		}else {
+  			statusString = gameBoard.State;
+  		}
+
+	  	context.fillStyle = "yellow";
+	  	context.font = "bold 16px Arial";
+	  	metrics = context.measureText(statusString);
+	  	context.fillText(statusString,
+	  					canvas.width/2 - metrics.width/2, 
+	  					canvas.height/2 );
+  		
+
+  	}
+}
+
+GoMan.GameLogic.renderPlayers = function(players) {
+
+	// render player names below players
+  	context.font = "bold 8px Arial";
+
+	for (id in Object(players))  {
+		var player = players[id];
+
+
+		if(player.Id == playerId) {
+			context.fillStyle = "yellow";
+		} else {
+			context.fillStyle = "red";
+		}
+	  	var metrics = context.measureText(player.Name);
+	  	var x = player.Location.X * spriteWidth;
+	  	var y = player.Location.Y * spriteHeight;
+	  	context.fillText(player.Name, x+spriteWidth/2-metrics.width/2, y+spriteHeight+8);
+
+	}
+
+}
+
 GoMan.GameLogic.fetchGameList = function(filterByState) {
 	
-
-	
-
 	// get a list of games from the server
 	url = gameHost+'/games';
 
@@ -250,7 +441,6 @@ moveRight = function() {
 
 moveLeft = function() {
 	console.log("move left");	
-
 
 	myPlayer.Location.X--;
 
@@ -315,15 +505,24 @@ GoMan.GameLogic.onGameListLoaded = function(gameSummaryData) {
 		totalGoMen = GoMan.GameLogic.countGoMen(game.Players);
 		totalGoGhosts =GoMan.GameLogic.countGoGhosts(game.Players);
 		
-		gameHTML = "<tr>"
-			+ "<td>"+game.Id +"</td>"
-			+ "<td><a id=\"joinGameButton\" class=\"btn btn-small btn-primary\" href=\"#\" onclick=GoMan.GameLogic.startShowJoinGameDialog(\""+game.Id+"\")>Join</a></td>"
-			+ "<td>"+game.State +"</td>"
+		gameHTML = "<tr><td>"+game.Id +"</td>";
+
+		if (game.State=="waiting") {
+
+			gameHTML += "<td><a id=\"joinGameButton\" class=\"btn btn-small btn-primary\" href=\"#\" onclick=GoMan.GameLogic.startShowJoinGameDialog(\""+game.Id+"\")>Join</a></td>";
+
+		} else {
+
+			gameHTML += "<td></td>";
+
+		}
+
+		gameHTML +="<td>"+game.State +"</td>"
 			+ "<td>"+totalGoMen +"/" + game.MaxGoMenAllowed+"</td>"
 			+ "<td>"+totalGoGhosts +"/" + game.MaxGoGhostsAllowed+"</td>"
 			//+ "<td>"+game.GameStartTime +"</td>"
 			+ "<td>"+GoMan.GameLogic.getSecondsTilStart(game.GameStartTime) +" seconds </td>"
-						+ "</tr>";
+			+ "</tr>";
 
 		$("#gameListTable tbody").append(gameHTML); 
 
@@ -368,11 +567,11 @@ GoMan.GameLogic.onGameCreated = function(gameData) {
 	// save gameId in local storage
 	localStorage.setItem('gameId',gameId);
 
-	GoMan.GameLogic.addPlayerToGame(gameId, gameName, playerName, playerType);
+	GoMan.GameLogic.addPlayerToGame(gameId, playerName, playerType);
 
 }
 
-GoMan.GameLogic.addPlayerToGame = function(gameId, gameName, playerName, playerType) {
+GoMan.GameLogic.addPlayerToGame = function(gameId, playerName, playerType) {
 
 	// now add first player to game
 	url = gameHost+'/games/'+gameId + "/players";
@@ -429,8 +628,12 @@ GoMan.GameLogic.onGameUpdate = function(gameData) {
 	// convert game data to 2d array
 	boardCells = GoMan.GameLogic.convertBoardTo2DArray(gameBoard);
 
+
 	// overlay players positions on boardCells
 	boardCells = GoMan.GameLogic.addPlayersToBoardCells(gameBoard,boardCells);
+
+	// render board + players
+	GoMan.GameLogic.renderCanvas(gameBoard, boardCells);
 	
 	var detailsString = GoMan.GameLogic.getGameDetailsString(gameBoard);
 	var playerDetailsString = GoMan.GameLogic.getPlayerDetailsString(gameBoard.Players, playerId);
@@ -439,6 +642,7 @@ GoMan.GameLogic.onGameUpdate = function(gameData) {
 
 	$("#gameboard").text(asciiBoard);
 	$("#gamestatus").text(detailsString + playerDetailsString);
+
 
 }
 
@@ -483,7 +687,11 @@ GoMan.GameLogic.addPlayersToBoardCells = function(gameBoard, boardCells) {
 		if(gameBoard.PowerPillsActive > 0) {
 			// powerpill active
 			if (player.Type == "goman") {
-				boardCells[y][x] = "M";
+				if(player.State=="dying") {
+					boardCells[y][x]="d";
+				} else {
+					boardCells[y][x] = "M";					
+				}
 			} else {
 				// must be a ghost
 				boardCells[y][x] = "g";
@@ -492,7 +700,11 @@ GoMan.GameLogic.addPlayersToBoardCells = function(gameBoard, boardCells) {
 		} else {
 			// powerpill not active
 			if (player.Type == "goman") {
-				boardCells[y][x] = "m";
+				if(player.State=="dying") {
+					boardCells[y][x]="d";
+				} else {
+					boardCells[y][x] = "m";
+				}
 			} else {
 				// must be a ghost
 				boardCells[y][x] = "G";

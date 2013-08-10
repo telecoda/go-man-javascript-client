@@ -34,6 +34,13 @@
 			<hr>
 			<div>
 				Game Server:<input type="text" id="game-host">
+				Game State:<select id="game-state">
+							<option value="all">ALL</option>
+							<option value="waiting" selected>Waiting</option>
+							<option value="playing">Playing</option>
+							<option value="won">Won</option>
+							<option value="over">Game Over</option>
+							</select>
 			</div>
 			<div class="jumbotron">
 				<table class="table table-striped" id="gameListTable">
@@ -88,11 +95,15 @@
 				</p>
 				<ul  class="unstyled">
 					<li class="divider"></li>
-						<li><a href="#">Game name:</a><input type="text" id="new-game-name"></li>
-						<li><a href="#">Player name:</a><input type="text" id="new-player-name"></li>
+						<li><a href="#">Game name: </a><input type="text" id="new-game-name" maxlength="10"></li>
+						<li><a href="#">Player name: </a><input type="text" id="new-player-name" maxlength="10"></li>
 						<br>
-						<li><input type="radio" name="newPlayerType" value="goman" checked> GoMan<br>
+						<li>You will play as: <br><input type="radio" name="newPlayerType" value="goman" checked> GoMan<br>
 						<input type="radio" name="newPlayerType" value="goghost"> GoGhost<br></li>
+						<br>
+						<li><a href="#">Total GoMen: </a><input style="padding: 0px 0px" type="number" min=1 max=20 value=1 id="new-max-gomen"></li>
+						<li><a href="#">Total GoGhosts: </a><input style="padding: 0px 0px" type="number" min=0 max=20 value=4 id="new-max-goghosts"></li>
+						<li><a href="#">Time to wait for players: </a><input style="padding: 0px 0px" type="number" min=1 max=120 value=60 id="new-wait-for-players-seconds"></li>
 						<br>
 						<li class="unstyled"><a href="#" class="btn btn-primary pull-right" id="cancelStartActionButton">Cancel</a>
 						<li class="unstyled"><a href="#" class="btn btn-primary btn-success" id="startGameActionButton">Start Game</a></li>
@@ -117,10 +128,10 @@
 				<ul  class="unstyled">
 					<li class="divider"></li>
 						<li><a href="#">Game id:</a><input type="text" id="join-game-id"></li>
-						<li><a href="#">Game name:</a><input type="text" id="join-game-name"></li>
+						<li><a href="#">Game name:</a><input type="text" id="join-game-name" maxlength="10"></li>
 						<li><a href="#">GoMen:</a><input type="text" id="join-gomen-count"></li>
 						<li><a href="#">GoGhosts:</a><input type="text" id="join-goghost-count"></li>
-						<li><a href="#">Player name:</a><input type="text" id="join-player-name"></li>
+						<li><a href="#">Player name:</a><input type="text" id="join-player-name" maxlength="10"></li>
 						<br>
 						<li><input type="radio" name="joinPlayerType" value="goman" checked> GoMan<br>
 						<input type="radio" name="joinPlayerType" value="goghost"> GoGhost<br></li>
@@ -141,7 +152,12 @@
 			$(document).ready(function() {
 
 			  $("#refreshButton").click(function() {
-					GoMan.GameLogic.fetchGameList("waiting");
+		     	  var selectState = $("#game-state").val()
+		     	  	if (selectState == "all") {
+						GoMan.GameLogic.fetchGameList();
+		     	  	} else {
+						GoMan.GameLogic.fetchGameList(selectState);
+		     	  	}
 				});
 			  $("#newGameButton").click(function() {
 					GoMan.GameLogic.showCreateGameDialog();
