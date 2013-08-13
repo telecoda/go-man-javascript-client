@@ -9,6 +9,7 @@ GoMan.APIUtils.asyncGET  = function ( url, onLoaded, onError ) {
 
 	var xhr = new XMLHttpRequest();
 
+
 	xhr.onreadystatechange = function () {
 
 		if ( xhr.readyState === 4 ) {
@@ -31,11 +32,13 @@ GoMan.APIUtils.asyncGET  = function ( url, onLoaded, onError ) {
 	};
 	
 	xhr.open( "GET", url, true );
+	//xhr.setRequestHeader('Origin', 'localhost');
 	xhr.send( null );
 	
 };
 
 GoMan.APIUtils.asyncPOST  = function ( url, body, onLoaded, onError ) {
+
 
 	var xhr = new XMLHttpRequest();
 
@@ -64,6 +67,7 @@ GoMan.APIUtils.asyncPOST  = function ( url, body, onLoaded, onError ) {
 	
 	xhr.open( "POST", url, true );
 	xhr.setRequestHeader('Content-Type', 'application/json');
+	//xhr.setRequestHeader('Access-Control-Allow-Origin', '*');
 	xhr.send( jsonBody );
 };
 
@@ -100,6 +104,7 @@ GoMan.APIUtils.asyncPUT  = function ( url, body, onLoaded, onError ) {
 	
 	xhr.open( "PUT", url, true );
 	xhr.setRequestHeader('Content-Type', 'application/json');
+	//xhr.setRequestHeader('Origin', 'localhost');
 	xhr.send( jsonBody );
 	
 };
