@@ -419,8 +419,11 @@ renderGame = function() {
 
     stats.end();
 
-	// start render loop
-	requestAnimationFrame(renderGame);
+    // if game won stop rendering
+    if(gameBoard.State!="won") {
+		// start render loop
+		requestAnimationFrame(renderGame);
+    }
 
 }
 
