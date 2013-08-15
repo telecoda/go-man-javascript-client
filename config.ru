@@ -1,16 +1,42 @@
 use Rack::Static, 
   :urls => ["/images", "/js", "/css", "/vendor"],
-  :root => "public",
-  :index => "index.html",
-  :header_rules => [
-    [:all, {'Cache-Control' => 'public, max-age=86400'}]
-  ]
+  :root => "public"
 
-run lambda { |env|
+map "/" do
+  run lambda { |env|
   [
-    404,
-    { 'Content-Type'  => 'text/html' },
-    ['404 - page not found']
+    200, 
+    {
+      'Content-Type'  => 'text/html', 
+      'Cache-Control' => 'public, max-age=86400' 
+    },
+    File.open('public/index.html', File::RDONLY)
   ]
 }
+end
 
+map "/gameslist.html" do
+  run lambda { |env|
+  [
+    200, 
+    {
+      'Content-Type'  => 'text/html', 
+      'Cache-Control' => 'public, max-age=86400' 
+    },
+    File.open('public/gameslist.html', File::RDONLY)
+  ]
+}
+end
+
+map "/game.html" do
+  run lambda { |env|
+  [
+    200, 
+    {
+      'Content-Type'  => 'text/html', 
+      'Cache-Control' => 'public, max-age=86400' 
+    },
+    File.open('public/game.html', File::RDONLY)
+  ]
+}
+end
