@@ -40,3 +40,16 @@ map "/game.html" do
   ]
 }
 end
+
+map "/favicon.ico" do
+  run lambda { |env|
+  [
+    200, 
+    {
+      'Content-Type'  => 'text/html', 
+      'Cache-Control' => 'public, max-age=86400' 
+    },
+    File.open('public/favicon.ico', File::RDONLY)
+  ]
+}
+end
