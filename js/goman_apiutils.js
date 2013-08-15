@@ -90,6 +90,8 @@ GoMan.APIUtils.asyncPUT  = function ( url, body, onLoaded, onError ) {
 			} else if ( xhr.status === 400) {
 
 				// do nothing move was not valid
+				waitingForMoveResponse = false;
+
 				
 			} else {
 

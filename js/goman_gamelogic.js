@@ -30,7 +30,7 @@ var upKey = 'w'.charCodeAt(0);
 var downKey = 's'.charCodeAt(0);
 var leftKey = 'a'.charCodeAt(0);
 var rightKey ='d'.charCodeAt(0);
-
+var waitingForMoveResponse = false;
 var keyAlreadyPressed = false;
 
 var canvas;
@@ -48,7 +48,12 @@ var myOnKeyPress = function(event) {
 			return;
 		}
 
+		if(waitingForMoveResponse) {
+			return;
+		}
+
 		keyAlreadyPressed = true;
+		waitingForMoveResponse = true;
 
 		console.log("key pressed");
 		switch(event.which) {
@@ -436,7 +441,7 @@ moveRight = function() {
 	url = gameHost+'/games/'+gameId+"/players/"+playerId;
 
 	console.log("Putting to url:" + url);
-	GoMan.APIUtils.asyncPUT(url, myPlayer , GoMan.GameLogic.onGameUpdate
+	GoMan.APIUtils.asyncPUT(url, myPlayer , GoMan.GameLogic.onMoveUpdate
 		, GoMan.GameLogic.onError);
 
 }
@@ -450,7 +455,7 @@ moveLeft = function() {
 	url = gameHost+'/games/'+gameId+"/players/"+playerId;
 
 	console.log("Putting to url:" + url);
-	GoMan.APIUtils.asyncPUT(url, myPlayer , GoMan.GameLogic.onGameUpdate
+	GoMan.APIUtils.asyncPUT(url, myPlayer , GoMan.GameLogic.onMoveUpdate
 		, GoMan.GameLogic.onError);
 
 }
@@ -464,7 +469,7 @@ moveUp = function() {
 	url = gameHost+'/games/'+gameId+"/players/"+playerId;
 
 	console.log("Putting to url:" + url);
-	GoMan.APIUtils.asyncPUT(url, myPlayer , GoMan.GameLogic.onGameUpdate
+	GoMan.APIUtils.asyncPUT(url, myPlayer , GoMan.GameLogic.onMoveUpdate
 		, GoMan.GameLogic.onError);
 
 }
@@ -478,7 +483,7 @@ moveDown = function() {
 	url = gameHost+'/games/'+gameId+"/players/"+playerId;
 
 	console.log("Putting to url:" + url);
-	GoMan.APIUtils.asyncPUT(url, myPlayer , GoMan.GameLogic.onGameUpdate
+	GoMan.APIUtils.asyncPUT(url, myPlayer , GoMan.GameLogic.onMoveUpdate
 		, GoMan.GameLogic.onError);
 
 }
@@ -611,12 +616,20 @@ GoMan.GameLogic.onGameStart = function(gameData) {
 
 	gameId = gameBoard.Id;
 	frameCounter=0;
+	waitingForMoveResponse=false;
 
 	// start render loop
 	requestAnimationFrame(renderGame);
 
 }
 
+// called after every move
+GoMan.GameLogic.onMoveUpdate = function(gameData) {
+
+	// allow player to move again
+	waitingForMoveResponse = false;
+	GoMan.GameLogic.onGameUpdate(gameData);
+}
 
 // called every update
 GoMan.GameLogic.onGameUpdate = function(gameData) {
