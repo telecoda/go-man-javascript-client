@@ -8,7 +8,7 @@ GoMan.GameLogic = function() {
 var gameHost = localStorage.getItem('gameHost');
 
 if (gameHost == undefined) {
-	gameHost = "http://localhost:8080"
+	gameHost = "http://go-man-app.appspot.com"
 }
 
 var gameBoard;
@@ -425,7 +425,7 @@ renderGame = function() {
     stats.end();
 
     // if game won stop rendering
-    if(gameBoard.State!="won") {
+    if(gameBoard.State!="won" && gameBoard.State!="over") {
 		// start render loop
 		requestAnimationFrame(renderGame);
     }
