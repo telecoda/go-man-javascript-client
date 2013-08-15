@@ -34,7 +34,7 @@
 
 			<hr>
 
-			<div class="row-fluid marketing">
+			<div class="row-fluid marketing" id="textgame">
 				<div class="span6">
 					<textarea id="gamestatus" cols="28" rows="24" style="width: 400px; font-family: courier !important;"></textarea>
 				</div>
@@ -44,10 +44,14 @@
 			</div>
 			
 			<hr>
-			<div class="row-fluid marketing">
-				<canvas id='canvas' width='896' height='768'>
-    			    Canvas not supported
-     			</canvas>
+			<div class="jumbotron">
+				<a id="showGUIButton" class="btn btn-large btn-success" href="gameslist.html">Show GUI</a>
+				<a id="hideGUIButton" class="btn btn-large btn-success" href="gameslist.html">Hide GUI</a>
+			</div>
+			<div class="row-fluid marketing ">
+					<canvas id='canvas' width='896' height='768'>
+	    			    Canvas not supported
+	     			</canvas>
      		</div>
 			<hr>
 
@@ -82,17 +86,37 @@
 			'use strict';
 			
 			$(document).ready(function() {
+
+				$("#showGUIButton").click(function(e) {
+					// show canvas
+					e.preventDefault();
+					document.getElementById('canvas').style.display = 'block';
+					document.getElementById('hideGUIButton').style.display = 'block';
+					// hide text game
+					document.getElementById('textgame').style.display = 'none';
+					document.getElementById('showGUIButton').style.display = 'none';
+		     	  	return;
+				});
 			 
+				 $("#hideGUIButton").click(function(e) {
+					// show canvas
+					e.preventDefault();
+					document.getElementById('canvas').style.display = 'none';
+					document.getElementById('hideGUIButton').style.display = 'none';
+					// hide text game
+					document.getElementById('textgame').style.display = 'block';
+					document.getElementById('showGUIButton').style.display = 'block';
+		     	  	return;
+				});
+				// hide 
+				document.getElementById('canvas').style.display = 'none';
+				document.getElementById('hideGUIButton').style.display = 'none';
+				// display
+				document.getElementById('textgame').style.display = 'block';
+				document.getElementById('showGUIButton').style.display = 'block';
+
+
 				GoMan.GameLogic.startGame();
-
-				/*var canvas = document.getElementById('canvas'),
-    			context = canvas.getContext('2d'),
-    			gomanImage = new Image();
-
-				gomanImage.src = 'images/go-man-32.png';
-				gomanImage.onload = function(e) {
-   					context.drawImage(gomanImage, 0, 0);
-				};*/
 
 			});
 		</script>

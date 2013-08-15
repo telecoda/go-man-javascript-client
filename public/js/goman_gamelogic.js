@@ -425,7 +425,7 @@ renderGame = function() {
     stats.end();
 
     // if game won stop rendering
-    if(gameBoard.State!="won") {
+    if(gameBoard.State!="won" && gameBoard.State!="over") {
 		// start render loop
 		requestAnimationFrame(renderGame);
     }
